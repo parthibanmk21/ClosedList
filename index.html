@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flex Highlight Demo</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      min-height: 100vh;
+      min-width: 0;
+    }
+    .container {
+      display: flex;
+      gap: 16px;
+      padding: 20px;
+      justify-content: center;
+      align-items: stretch;
+      min-height: 100vh;
+      height: 100vh;
+      width: 100vw;
+      box-sizing: border-box;
+    }
+    .flex-item {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      padding: 16px;
+      flex: 1 1 320px;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      /* max-width: 480px; */
+    }
+    .flex-item-3 {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      padding: 16px;
+      flex: 1 1 320px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      max-width: 300px;
+    }
+    .flex-item-3 h3 {
+      margin: 0 0 0.5em 0;
+      font-size: 1.1em;
+      color: #333;
+      font-weight: 600;
+    }
+    .flex-item h3 {
+      margin: 0 0 0.5em 0;
+      font-size: 1.1em;
+      color: #333;
+      font-weight: 600;
+    }
+    .input-field {
+      /* width: 100%; */
+      font-size: 1em;
+      background: #eeeeee;
+      border: none;
+      border: 2px solid #eeeeee;
+      border-radius: 8px;
+      padding: 8px;
+      outline: none;
+      transition: border-color 0.18s;
+      color: #222;
+      margin-bottom: 0.2em;
+      box-shadow: none;
+      resize: none;
+      min-height: 120px;
+      max-height: 100%;
+      flex: 1 1 auto;
+      overflow-y: auto;
+      font-family: inherit;
+    }
+    .input-field:focus {
+      border: 2px solid #242424;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+    .input-field:disabled {
+      background: #ededed;
+      color: #b2b2b2;
+      border-bottom: 2px solid #efefef;
+    }
+
+    .search-field {
+      width: 100%;
+      font-size: 1em;
+      background: #fff;
+      border: 2px solid #c8c8c8;
+      border-radius: 8px;
+      padding: 0.7em 0.9em 0.7em 0.9em;
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
+      color: #222;
+      margin-bottom: 0.5em;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      resize: none;
+      min-height: 0;
+      flex: 0 0 auto;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    .search-field:hover {
+      border: 2px solid #222;
+    }
+    .search-field:focus {
+      border: 2px solid #242424;
+      box-shadow: 0 0 0 2px #e3e3e3;
+      background: #ffffff;
+    }
+    .search-field:disabled {
+      background: #909090;
+      color: #b2b2b2;
+      border: 2px solid #efefef;
+      box-shadow: none;
+    }
+
+    .selected-field[readonly] {
+      /* width: 100%; */
+      font-size: 1em;
+      background: #f7f7f7;
+      color: #222;
+      border: 2px solid #e3e3e3;
+      border-radius: 6px;
+      padding: 0.7em 0.9em 0.7em 0.9em;
+      outline: none;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      margin-bottom: 0.2em;
+      font-family: inherit;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .selected-field[readonly]:focus {
+      border: 2px solid #242424;
+      box-shadow: 0 0 0 2px #e3e3e3;
+      background: #f7f7f7;
+    }
+    .selected-field[readonly]:disabled {
+      background: #ededed;
+      color: #b2b2b2;
+      border: 2px solid #efefef;
+      box-shadow: none;
+    }
+    .formatted-html {
+      background: #f0f0f0;
+      border-radius: 6px;
+      padding: 1em;
+      font-family: 'Fira Mono', monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      flex: 1 1 0;
+      min-height: 0;
+      overflow: auto;
+      font-size: 1em;
+      margin-bottom: 0.2em;
+    }
+    .highlight {
+      background: #ffe066;
+      color: #222;
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+    .checkbox-list {
+      border: 2px solid #c8c8c8;
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      margin-bottom: 0.5em;
+      /* max-height: 32vh; */
+    }
+    .checkbox-item {
+      display: flex;
+      background: #f7f7f7;
+      align-items: center;
+      gap: 0.7em;
+      font-size: 1em;
+      border-radius: 4px;
+      padding: 0.5em 0.7em;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border 0.15s;
+      min-width: 0;
+    }
+    .checkbox-item input[type="checkbox"] {
+      cursor: pointer;
+      accent-color: #575757;
+      width: 1.1em;
+      height: 1.1em;
+      margin: 0;
+    }
+    .checkbox-item:hover {
+      background: #e6e6e6;
+      color: #292929;
+    }
+    .checkbox-item.selected {
+      background: #d0d0d0;
+      color: #272727;
+    }
+    .copy-btn {
+      width: 100%;
+      margin-top: 0.2em;
+      padding: 0.7em 1.2em;
+      border: none;
+      border-radius: 4px;
+      background: #1a4fa0;
+      color: #fff;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.15s;
+      align-self: flex-end;
+    }
+    .copy-btn:hover {
+      background: #163e7a;
+    }
+    /* @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        gap: 3vw;
+        padding: 20px;
+        height: auto;
+        min-height: 100vh;
+      }
+      .flex-item {
+        max-width: 100vw;
+        width: 100%;
+        min-width: 0;
+        height: auto;
+      }
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 2vw 1vw;
+        gap: 2vw;
+      }
+      .flex-item {
+        padding: 4vw 2vw;
+      }
+      .formatted-html {
+        font-size: 0.95em;
+      }
+      .checkbox-item {
+        font-size: 0.97em;
+        padding: 0.4em 0.5em;
+      }
+      .copy-btn {
+        font-size: 0.97em;
+        padding: 0.6em 1em;
+      }
+    } */
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- First Div: Input Field -->
+    <div class="flex-item">
+      <h3>Enter yor base data here</h3>
+      <textarea class="input-field" id="mainInput" rows="7" placeholder="Type values here..."></textarea>
+    </div>
+    <!-- Second Div: Formatted HTML Display -->
+    <div class="flex-item">
+      <h3>Formatted HTML Output:</h3>
+      <div class="formatted-html" id="formattedOutput"></div>
+    </div>
+    <!-- Third Div: Search/Highlight/Checkboxes -->
+    <div class="flex-item-3">
+      <h3>Enter the text to highlight</h3>
+      <input class="search-field" id="highlightInput" type="text" placeholder="Type to highlight..." />
+      <div class="checkbox-list" id="checkboxList"></div>
+      <input class="selected-field" id="selectedValues" type="text" placeholder="Selected values..." readonly />
+      <button class="copy-btn" id="copyBtn" type="button">Copy</button>
+    </div>
+  </div>
+  <script>
+    // Helper: Parse input into array
+    function parseInput(input) {
+      return input
+        .split(/\n|,/)
+        .map(v => v.trim())
+        .filter(v => v.length > 0);
+    }
+
+    // Helper: Escape HTML
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, function(tag) {
+        const chars = {
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        };
+        return chars[tag] || tag;
+      });
+    }
+
+    // DOM Elements
+    const mainInput = document.getElementById('mainInput');
+    const formattedOutput = document.getElementById('formattedOutput');
+    const highlightInput = document.getElementById('highlightInput');
+    const checkboxList = document.getElementById('checkboxList');
+    const selectedValues = document.getElementById('selectedValues');
+    const copyBtn = document.getElementById('copyBtn');
+
+    let values = [];
+    let highlightText = '';
+    let checkedSet = new Set();
+    // State for single selected (for highlight)
+    let singleSelected = '';
+
+    // Render formatted HTML output
+    function renderFormatted() {
+      // If a value is selected in the checkbox-list, highlight it in the formatted-html
+      let selectedHighlight = singleSelected;
+      formattedOutput.innerHTML = values.map(val => {
+        // If selectedHighlight is set, highlight it in the HTML (even if it's an HTML tag)
+        if (selectedHighlight && val.toLowerCase().includes(selectedHighlight.toLowerCase())) {
+          // Highlight all matches (but do not escape HTML, render as real HTML)
+          const regex = new RegExp(`(${selectedHighlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+          // Walk HTML nodes and highlight
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = val;
+          function highlightNode(node) {
+            if (node.nodeType === 3) { // Text node
+              return node.nodeValue.replace(regex, '<span class="highlight">$1</span>');
+            } else if (node.nodeType === 1) { // Element node
+              let html = `<${node.tagName.toLowerCase()}`;
+              for (let attr of node.attributes) {
+                html += ` ${attr.name}="${attr.value}"`;
+              }
+              html += '>';
+              for (let child of node.childNodes) {
+                html += highlightNode(child);
+              }
+              html += `</${node.tagName.toLowerCase()}>`;
+              return html;
+            }
+            return '';
+          }
+          let highlighted = '';
+          for (let child of tempDiv.childNodes) {
+            highlighted += highlightNode(child);
+          }
+          return `<div>${highlighted}</div>`;
+        } else {
+          // Render as real HTML
+          return `<div>${val}</div>`;
+        }
+      }).join('');
+    }
+
+    // Render checkbox list
+    function renderCheckboxes() {
+      // If highlightText is not empty, split by comma and trim
+      let allCheckboxValues = [];
+      if (highlightText.trim() !== '') {
+        allCheckboxValues = highlightText.split(',').map(v => v.trim()).filter(v => v.length > 0);
+      }
+      // If highlightText is empty, show nothing
+      checkboxList.innerHTML = allCheckboxValues.map((val, idx) => {
+        const checked = checkedSet.has(val) ? 'checked' : '';
+        const selected = singleSelected === val ? 'selected' : '';
+        // No highlight inside the checkbox-item, just plain text
+        return `<div class="checkbox-item ${selected}" data-value="${escapeHtml(val)}"><input type="checkbox" data-idx="${idx}" value="${escapeHtml(val)}" ${checked}><span>${escapeHtml(val)}</span></div>`;
+      }).join('');
+    }
+
+    // Update selected values field
+    function updateSelectedField() {
+      selectedValues.value = Array.from(checkedSet).join(', ');
+    }
+
+    // Event: Main input change
+    mainInput.addEventListener('input', () => {
+      values = parseInput(mainInput.value);
+      // Remove unchecked values from checkedSet
+      checkedSet = new Set(values.filter(v => checkedSet.has(v)));
+      renderFormatted();
+      renderCheckboxes();
+      updateSelectedField();
+      singleSelected = '';
+    });
+
+    // Event: Highlight input change
+    highlightInput.addEventListener('input', () => {
+      highlightText = highlightInput.value;
+      renderFormatted();
+      renderCheckboxes(); // Update checkbox list when search text changes
+      singleSelected = '';
+    });
+
+    // Event: Checkbox click (multi-select)
+    checkboxList.addEventListener('click', (e) => {
+      if (e.target && e.target.type === 'checkbox') {
+        const input = e.target;
+        const val = input.value;
+        if (checkedSet.has(val)) {
+          checkedSet.delete(val);
+        } else {
+          checkedSet.add(val);
+        }
+        renderCheckboxes();
+        updateSelectedField();
+        renderFormatted(); // Update formatted-html with highlight
+      }
+    });
+
+    // Event: Checkbox-item click (single select for highlight)
+    checkboxList.addEventListener('click', (e) => {
+      // Only trigger if not clicking the checkbox itself
+      if (e.target && e.target.type === 'checkbox') return;
+      const item = e.target.closest('.checkbox-item');
+      if (!item) return;
+      const val = item.getAttribute('data-value');
+      if (singleSelected === val) {
+        singleSelected = '';
+      } else {
+        singleSelected = val;
+      }
+      renderCheckboxes();
+      renderFormatted();
+    });
+
+    // Copy button logic
+    copyBtn.addEventListener('click', () => {
+      if (selectedValues.value) {
+        navigator.clipboard.writeText(selectedValues.value);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => {
+          copyBtn.textContent = 'Copy';
+        }, 1200);
+      }
+    });
+
+    // Initial render
+    renderFormatted();
+    renderCheckboxes();
+    updateSelectedField();
+  </script>
+</body>
+</html> 
