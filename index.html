@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Closed List Finder</title>
+  <title>ClosedList</title>
   <style>
     html, body {
       height: 100%;
@@ -196,6 +196,14 @@
       transition: background 0.15s, color 0.15s, border 0.15s;
       min-width: 0;
     }
+    .checkbox-item.valid {
+      background: #e8f5e8;
+      border-left: 3px solid #4caf50;
+    }
+    .checkbox-item.invalid {
+      background: #ffeaea;
+      border-left: 3px solid #f44336;
+    }
     .checkbox-item input[type="checkbox"] {
       cursor: pointer;
       accent-color: #575757;
@@ -207,8 +215,22 @@
       background: #e6e6e6;
       color: #292929;
     }
+    .checkbox-item.valid:hover {
+      background: #d4f0d4;
+    }
+    .checkbox-item.invalid:hover {
+      background: #ffd6d6;
+    }
     .checkbox-item.selected {
       background: #d0d0d0;
+      color: #272727;
+    }
+    .checkbox-item.valid.selected {
+      background: #c8e6c9;
+      color: #272727;
+    }
+    .checkbox-item.invalid.selected {
+      background: #ffcdd2;
       color: #272727;
     }
     .copy-btn {
@@ -370,8 +392,11 @@
       checkboxList.innerHTML = allCheckboxValues.map((val, idx) => {
         const checked = checkedSet.has(val) ? 'checked' : '';
         const selected = singleSelected === val ? 'selected' : '';
+        // Check if value exists in formatted-html
+        const isValid = values.some(v => v.toLowerCase().includes(val.toLowerCase()));
+        const validationClass = isValid ? 'valid' : 'invalid';
         // No highlight inside the checkbox-item, just plain text
-        return `<div class="checkbox-item ${selected}" data-value="${escapeHtml(val)}"><input type="checkbox" data-idx="${idx}" value="${escapeHtml(val)}" ${checked}><span>${escapeHtml(val)}</span></div>`;
+        return `<div class="checkbox-item ${selected} ${validationClass}" data-value="${escapeHtml(val)}"><input type="checkbox" data-idx="${idx}" value="${escapeHtml(val)}" ${checked}><span>${escapeHtml(val)}</span></div>`;
       }).join('');
     }
 
