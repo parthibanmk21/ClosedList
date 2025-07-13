@@ -413,7 +413,7 @@
         <div style="flex:1 1 70%; display:flex; align-items:center; justify-content:center; background:#eaeaea; position:relative;">
           <button id="carouselPrev" style="position:absolute; left:8px; z-index:2; background:rgba(0,0,0,0.3); border:none; border-radius:50%; width:36px; height:36px; display:none; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:1.5em;">&#8592;</button>
           <div style="display:flex; flex-direction:column; align-items:center; width:100%; height:100%;">
-            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+            <div style="width:100%; height:90%; display:flex; align-items:center; justify-content:center;">
               <img id="imgPreview" src="" alt="Preview"
                 style="max-width:100%; max-height:100%; border-radius:8px; object-fit:contain; background:#fff; display:block;" />
             </div>
@@ -623,13 +623,17 @@
         imagePopupBg.style.display = 'flex';
         popupOpen = true;
         // imgLinkInput.focus(); // Removed to prevent auto-focus and accidental 'e' input
+        // Restore the links if they exist
+        if (imageLinks.length > 0) {
+          imgLinkInput.value = imageLinks.join(', ');
+          updateImagePreview();
+        }
       } else {
         imagePopupBg.style.display = 'none';
         popupOpen = false;
         imgPreview.src = '';
-        imgLinkInput.value = '';
-        imageLinks = [];
-        currentImgIdx = 0;
+        // Don't clear the links, just hide the popup
+        // imageLinks and currentImgIdx are preserved
       }
     }
 
@@ -723,9 +727,8 @@
         imagePopupBg.style.display = 'none';
         popupOpen = false;
         imgPreview.src = '';
-        imgLinkInput.value = '';
-        imageLinks = [];
-        currentImgIdx = 0;
+        // Don't clear the links, just hide the popup
+        // imageLinks and currentImgIdx are preserved
       }
     });
 
@@ -735,9 +738,8 @@
         imagePopupBg.style.display = 'none';
         popupOpen = false;
         imgPreview.src = '';
-        imgLinkInput.value = '';
-        imageLinks = [];
-        currentImgIdx = 0;
+        // Don't clear the links, just hide the popup
+        // imageLinks and currentImgIdx are preserved
       }
     });
 
