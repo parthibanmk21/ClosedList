@@ -128,6 +128,10 @@
       flex: 1 1 auto;
       overflow-y: auto;
       font-family: inherit;
+      line-height: 1.5em;
+      white-space: pre-wrap;
+      word-break: break-word;
+      letter-spacing: 0.03em;
     }
 
     .input-field:focus {
@@ -216,8 +220,11 @@
       flex: 1 1 0;
       min-height: 0;
       overflow: auto;
+      font-family: inherit;
+      line-height: 1.5em;
       font-size: 1em;
       margin-bottom: 0.2em;
+      letter-spacing: 0.03em;
     }
 
     .highlight {
@@ -353,6 +360,40 @@
         padding: 0.6em 1em;
       }
     } */
+    /* Syntax highlighting classes */
+    .hl-tag { color: #1a4fa0; font-weight: bold; }
+    .hl-attr { color: #b76b00; }
+    .hl-value { color: #008c6e; }
+    .hl-comment { color: #909090; font-style: italic; }
+
+    /* Thumbnails row for image popup */
+    #thumbsRow {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      /* padding-top: 8px; */
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: #bbb #eee;
+      box-sizing: border-box;
+      background: #eaeaea;
+    }
+    #thumbsRow img {
+      flex-shrink: 0;
+      height: 40px;
+      width: auto;
+      border-radius: 6px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      cursor: pointer;
+      border: 2px solid transparent;
+      background: #fff;
+      transition: border 0.15s;
+    }
   </style>
 </head>
 
@@ -367,6 +408,7 @@
     <div class="flex-item">
       <h3>Formatted HTML Output:</h3>
       <div class="formatted-html" id="formattedOutput"></div>
+      <div id="sdldCount" style="margin-top: 10px; font-size: 1em; color: #333;"></div>
     </div>
     <!-- Third Div: Search/Highlight/Checkboxes -->
     <div class="flex-item-3" id="flexItem3">
@@ -410,16 +452,14 @@
           <textarea id="imgLinkInput" placeholder="Paste image link(s), separated by commas..."
             style="width:100%; height:100%; min-height:0; resize:none; font-size:1em; padding:8px; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; flex:1 1 auto;"></textarea>
         </div>
-        <div style="flex:1 1 70%; display:flex; align-items:center; justify-content:center; background:#eaeaea; position:relative;">
-          <button id="carouselPrev" style="position:absolute; left:8px; z-index:2; background:rgba(0,0,0,0.3); border:none; border-radius:50%; width:36px; height:36px; display:none; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:1.5em;">&#8592;</button>
-          <div style="display:flex; flex-direction:column; align-items:center; width:100%; height:100%;">
-            <div style="width:100%; height:90%; display:flex; align-items:center; justify-content:center;">
-              <img id="imgPreview" src="" alt="Preview"
-                style="max-width:100%; max-height:100%; border-radius:8px; object-fit:contain; background:#fff; display:block;" />
-            </div>
-            <div id="thumbsRow" style="display:flex; flex-direction:row; align-items:center; gap:8px; margin-top:10px; width:100%; overflow-x:auto; padding-bottom:4px; scrollbar-width:thin; scrollbar-color:#bbb #eee;"></div>
+        <div style="flex:1 1 70%; display:flex; flex-direction:column; background:#eaeaea; position:relative; min-width:0; min-height:0; overflow:hidden;">
+          <div style="flex:1 1 auto; padding:8px; display:flex; align-items:center; justify-content:center; width:100%; min-height:0; min-width:0; position:relative;">
+            <button id="carouselPrev" style="position:absolute; left:8px; z-index:2; background:rgba(0,0,0,0.3); border:none; border-radius:50%; width:36px; height:36px; display:none; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:1.5em;">&#8592;</button>
+            <img id="imgPreview" src="" alt="Preview"
+              style="max-width:100%; max-height:100%; border-radius:8px; object-fit:contain; background:#fff; display:block; margin:auto;" />
+            <button id="carouselNext" style="position:absolute; right:8px; z-index:2; background:rgba(0,0,0,0.3); border:none; border-radius:50%; width:36px; height:36px; display:none; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:1.5em;">&#8594;</button>
           </div>
-          <button id="carouselNext" style="position:absolute; right:8px; z-index:2; background:rgba(0,0,0,0.3); border:none; border-radius:50%; width:36px; height:36px; display:none; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:1.5em;">&#8594;</button>
+          <div id="thumbsRow"></div>
         </div>
       </div>
     </div>
@@ -457,7 +497,7 @@
     // State for single selected (for highlight)
     let singleSelected = '';
 
-    // Render formatted HTML output
+    // Render formatted HTML output and SD/LD counts
     function renderFormatted() {
       // If a value is selected in the checkbox-list, highlight it in the formatted-html
       let selectedHighlight = singleSelected;
@@ -496,6 +536,34 @@
           return `<div>${val}</div>`;
         }
       }).join('');
+
+      // SD/LD count logic
+      const sdldDiv = document.getElementById('sdldCount');
+      // Join all values as HTML for parsing
+      const htmlString = values.join('\n');
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = htmlString;
+      // SD: count words in all <p> tags
+      let sdCount = 0;
+      const pTags = tempDiv.querySelectorAll('p');
+      pTags.forEach(p => {
+        // Count words in this <p>
+        const words = p.textContent.trim().split(/\s+/).filter(Boolean);
+        sdCount += words.length;
+      });
+      // LD: count <li> in all <ul>
+      let ldCount = 0;
+      const ulTags = tempDiv.querySelectorAll('ul');
+      ulTags.forEach(ul => {
+        ldCount += ul.querySelectorAll('li').length;
+      });
+      // SD color and fail
+      let sdColor = sdCount < 55 ? 'red' : '#00ca00';
+      let sdFail = sdCount < 55 ? ' <span style="color:red">(Fail)</span>' : ' <span style="color:#00ca00">(Pass)</span>';
+      // LD color and fail
+      let ldColor = ldCount < 3 ? 'red' : '#00ca00';
+      let ldFail = ldCount < 3 ? ' <span style="color:red">(Fail)</span>' : ' <span style="color:#00ca00">(Pass)</span>';
+      sdldDiv.innerHTML = `SD count: <span style="color:${sdColor}">${sdCount}</span>${sdFail}, LD count: <span style="color:${ldColor}">${ldCount}</span>${ldFail}`;
     }
 
     // Render checkbox list
