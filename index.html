@@ -832,10 +832,10 @@
     // Clean links button logic
     const cleanLinksBtn = document.getElementById('cleanLinksBtn');
     cleanLinksBtn.addEventListener('click', () => {
-      // Split by comma, trim, remove leading/trailing special chars
+      // Split by comma, extract https...jpg|jpeg|png
       const cleaned = imgLinkInput.value.split(',').map(link => {
-        // Remove leading/trailing spaces and special chars (quotes, brackets, etc.)
-        return link.trim().replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
+        const match = link.match(/https[^\s,]*?\.(jpg|jpeg|png)/i);
+        return match ? match[0] : '';
       }).filter(Boolean);
       imgLinkInput.value = cleaned.join(', ');
       updateImagePreview();
