@@ -394,6 +394,19 @@
       background: #fff;
       transition: border 0.15s;
     }
+
+    /* Image preview zoom on hover */
+    #imgPreview {
+      transition: transform 0.1ase;
+      cursor: grab;
+      user-select: none;
+    }
+    #imgPreview.zoomed {
+      cursor: grabbing;
+    }
+    #imgPreview.zoomed:hover {
+      cursor: grabbing;
+    }
   </style>
 </head>
 
@@ -484,6 +497,24 @@
       });
     }
 
+    // Helper: Extract text nodes from HTML
+    function extractTextNodesFromHTML(html) {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+      const textNodes = [];
+      function traverse(node) {
+        if (node.nodeType === 3) { // Text node
+          textNodes.push(node.textContent.trim());
+        } else if (node.nodeType === 1) { // Element node
+          for (let child of node.childNodes) {
+            traverse(child);
+          }
+        }
+      }
+      traverse(tempDiv);
+      return textNodes;
+    }
+
     // DOM Elements
     const mainInput = document.getElementById('mainInput');
     const formattedOutput = document.getElementById('formattedOutput');
@@ -569,20 +600,30 @@
 
     // Render checkbox list
     function renderCheckboxes() {
-      // If highlightText is not empty, split by comma and trim
+      // Show search terms from search-field in checkbox list
       let allCheckboxValues = [];
       if (highlightText.trim() !== '') {
-        allCheckboxValues = highlightText.split(',').map(v => v.trim()).filter(v => v.length > 0);
+        // Split search field by comma, colon, semicolon, pipe, trim, and filter non-empty
+        allCheckboxValues = highlightText.split(/[,:;|]/).map(v => v.trim()).filter(v => v.length > 0);
       }
-      // If highlightText is empty, show nothing
-      checkboxList.innerHTML = allCheckboxValues.map((val, idx) => {
-        const checked = checkedSet.has(val) ? 'checked' : '';
-        const selected = singleSelected === val ? 'selected' : '';
-        // Check if value exists in formatted-html
-        const isValid = values.some(v => v.toLowerCase().includes(val.toLowerCase()));
-        const validationClass = isValid ? 'valid' : 'invalid';
-        // No highlight inside the checkbox-item, just plain text
-        return `<div class="checkbox-item ${selected} ${validationClass}" data-value="${escapeHtml(val)}"><input type="checkbox" data-idx="${idx}" value="${escapeHtml(val)}" ${checked}><span>${escapeHtml(val)}</span></div>`;
+      // Prepare array with validity and count
+      let checkboxData = allCheckboxValues.map((val, idx) => {
+        const count = values.reduce((acc, v) => acc + (v.toLowerCase().includes(val.toLowerCase()) ? 1 : 0), 0);
+        const isValid = count > 0;
+        return { val, idx, checked: checkedSet.has(val), selected: singleSelected === val, isValid, count };
+      });
+      // Sort: valid first, then invalid
+      checkboxData.sort((a, b) => {
+        if (a.isValid === b.isValid) return 0;
+        return a.isValid ? -1 : 1;
+      });
+      // Render
+      checkboxList.innerHTML = checkboxData.map(item => {
+        const checked = item.checked ? 'checked' : '';
+        const selected = item.selected ? 'selected' : '';
+        const validationClass = item.isValid ? 'valid' : 'invalid';
+        // Show count next to span
+        return `<div class="checkbox-item ${selected} ${validationClass}" data-value="${escapeHtml(item.val)}"><input type="checkbox" data-idx="${item.idx}" value="${escapeHtml(item.val)}" ${checked}><span>${escapeHtml(item.val)} <b>(${item.count})</b></span></div>`;
       }).join('');
     }
 
@@ -735,6 +776,52 @@
       updateSelectedField();
     });
 
+    // Image preview pan and zoom functionality
+    let isZoomed = false;
+    let isDragging = false;
+    let startX, startY, translateX = 0, translateY = 0, scale = 1;
+
+    imgPreview.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? 0.9 : 1.1;
+      scale = Math.max(0.5, Math.min(3, scale * delta));
+      updateImageTransform();
+    });
+
+    imgPreview.addEventListener('mousedown', (e) => {
+      if (scale > 1) {
+        isDragging = true;
+        imgPreview.classList.add('zoomed');
+        startX = e.clientX - translateX;
+        startY = e.clientY - translateY;
+      }
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (isDragging && scale > 1) {
+        translateX = e.clientX - startX;
+        translateY = e.clientY - startY;
+        updateImageTransform();
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      imgPreview.classList.remove('zoomed');
+    });
+
+    function updateImageTransform() {
+      imgPreview.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+
+    // Reset zoom when changing images
+    function resetImageZoom() {
+      scale = 1;
+      translateX = 0;
+      translateY = 0;
+      updateImageTransform();
+    }
+
     // Live update image preview and carousel
     function updateImagePreview() {
       // Split by comma, trim, filter empty
@@ -744,10 +831,12 @@
         carouselPrev.style.display = 'none';
         carouselNext.style.display = 'none';
         thumbsRow.innerHTML = '';
+        resetImageZoom();
         return;
       }
       if (currentImgIdx >= imageLinks.length) currentImgIdx = 0;
       imgPreview.src = imageLinks[currentImgIdx];
+      resetImageZoom();
       if (imageLinks.length > 1) {
         carouselPrev.style.display = 'flex';
         carouselNext.style.display = 'flex';
@@ -832,9 +921,9 @@
     // Clean links button logic
     const cleanLinksBtn = document.getElementById('cleanLinksBtn');
     cleanLinksBtn.addEventListener('click', () => {
-      // Split by comma, extract https...jpg|jpeg|png
+      // Split by comma, extract http(s)...jpg|jpeg|png
       const cleaned = imgLinkInput.value.split(',').map(link => {
-        const match = link.match(/https[^\s,]*?\.(jpg|jpeg|png)/i);
+        const match = link.match(/https?[^\s,]*?\.(jpg|jpeg|png)/i);
         return match ? match[0] : '';
       }).filter(Boolean);
       imgLinkInput.value = cleaned.join(', ');
@@ -846,6 +935,15 @@
     renderCheckboxes();
     updateSelectedField();
     updateImagePreview();
+
+    // Escape key handler for input-field
+    mainInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        // Clear selection in contenteditable
+        window.getSelection().removeAllRanges();
+        mainInput.blur();
+      }
+    });
   </script>
 </body>
 
