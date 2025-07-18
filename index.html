@@ -501,6 +501,12 @@
             clip-rule="evenodd" />
         </svg>
       </div>
+      <div class="flex-arrow" id="urlOpenerArrow">
+        <svg id="urlOpenerIcon" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#4f4f4f" viewBox="0 0 24 24">
+          <path fill-rule="evenodd" d="M11.403 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6.403a3.01 3.01 0 0 1-1.743-1.612l-3.025 3.025A3 3 0 1 1 9.99 9.768l3.025-3.025A3.01 3.01 0 0 1 11.403 5Z" clip-rule="evenodd"/>
+          <path fill-rule="evenodd" d="M13.232 4a1 1 0 0 1 1-1H20a1 1 0 0 1 1 1v5.768a1 1 0 1 1-2 0V6.414l-6.182 6.182a1 1 0 0 1-1.414-1.414L17.586 5h-3.354a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
+        </svg>
+      </div>
     </div>
     <!-- Image Popup -->
     <div id="imagePopupBg"
@@ -521,6 +527,19 @@
             <button id="carouselNext" style="position:absolute; right:8px; z-index:2; background:rgba(0,0,0,0.3); border:none; border-radius:50%; width:36px; height:36px; display:none; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:1.5em;">&#8594;</button>
           </div>
           <div id="thumbsRow"></div>
+        </div>
+      </div>
+    </div>
+    <!-- URL Opener Popup -->
+    <div id="urlOpenerPopupBg"
+      style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:1000; justify-content:center; align-items:center;">
+      <div id="urlOpenerPopupContent" style="background:#fff; border-radius:12px; margin:16px; width:calc(90vw - 32px); max-width:500px; display:flex; flex-direction:column; align-items:stretch; overflow:hidden;">
+        <label for='urlOpenerInput' style='font-size:1em; margin:16px 0 8px 16px; color:#222;'>Enter URL(s)</label>
+        <textarea id="urlOpenerInput" placeholder="Paste URLs, separated by commas or newlines..."
+          style="width:calc(100% - 32px); margin:0 16px 8px 16px; min-height:80px; resize:none; font-size:1em; padding:8px; border-radius:8px; border:1px solid #ccc; box-sizing:border-box;"></textarea>
+        <div style="display:flex; flex-direction:row; gap:8px; justify-content:flex-end; margin:0 16px 16px 16px;">
+          <button id="urlOpenerCleanBtn" type="button" style="padding:7px 16px; border-radius:6px; border:none; background:#1a4fa0; color:#fff; font-size:1em; cursor:pointer;">Clean</button>
+          <button id="urlOpenerOpenBtn" type="button" style="padding:7px 16px; border-radius:6px; border:none; background:#00a000; color:#fff; font-size:1em; cursor:pointer;">Open in Tab</button>
         </div>
       </div>
     </div>
@@ -560,6 +579,18 @@
       }
       traverse(tempDiv);
       return textNodes;
+    }
+
+    // Helper: Clean links (same as imgLinkInput)
+    function cleanLinksInput(raw) {
+      return raw.split(/,|\n/).map(link => {
+        // Try to extract http(s) links ending with .jpg, .jpeg, .png, or any valid URL
+        let match = link.match(/https?:[^\s,]*?\.(jpg|jpeg|png)/i);
+        if (match) return match[0].trim();
+        // Otherwise, try to extract any http(s) link
+        match = link.match(/https?:[^\s,]*/i);
+        return match ? match[0].trim() : '';
+      }).filter(Boolean);
     }
 
     // DOM Elements
@@ -1066,6 +1097,44 @@
       updateImagePreview();
     });
 
+    // URL Opener logic
+    const urlOpenerArrow = document.getElementById('urlOpenerArrow');
+    const urlOpenerPopupBg = document.getElementById('urlOpenerPopupBg');
+    const urlOpenerInput = document.getElementById('urlOpenerInput');
+    const urlOpenerCleanBtn = document.getElementById('urlOpenerCleanBtn');
+    const urlOpenerOpenBtn = document.getElementById('urlOpenerOpenBtn');
+
+    urlOpenerArrow.addEventListener('click', () => {
+      urlOpenerPopupBg.style.display = 'flex';
+      urlOpenerInput.focus();
+    });
+    urlOpenerPopupBg.addEventListener('click', (e) => {
+      if (e.target === urlOpenerPopupBg) {
+        urlOpenerPopupBg.style.display = 'none';
+        urlOpenerInput.value = '';
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (urlOpenerPopupBg.style.display === 'flex' && e.key === 'Escape') {
+        urlOpenerPopupBg.style.display = 'none';
+        urlOpenerInput.value = '';
+      }
+    });
+    urlOpenerCleanBtn.addEventListener('click', () => {
+      // Use the same cleaning logic as imgLinkInput
+      const cleaned = cleanLinksInput(urlOpenerInput.value);
+      urlOpenerInput.value = cleaned.join(', ');
+    });
+    urlOpenerOpenBtn.addEventListener('click', () => {
+      // Open all valid URLs in new tabs (synchronously, like bulk url opener)
+      const urls = urlOpenerInput.value.split(/,|\n/).map(link => link.trim()).filter(Boolean);
+      urls.forEach(url => {
+        if (/^https?:\/\//i.test(url)) {
+          window.open(url, '_blank');
+        }
+      });
+    });
+
     // Initial render
     renderFormatted();
     renderCheckboxes();
@@ -1078,6 +1147,27 @@
         // Clear selection in contenteditable
         window.getSelection().removeAllRanges();
         mainInput.blur();
+      }
+    });
+
+    // Keyboard shortcut for URL opener popup (w)
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if ((e.key === 'w' || e.key === 'W')) {
+        if (urlOpenerPopupBg.style.display === 'flex') {
+          urlOpenerPopupBg.style.display = 'none';
+          urlOpenerInput.value = '';
+        } else {
+          urlOpenerPopupBg.style.display = 'flex';
+          // Do not focus urlOpenerInput here
+        }
+      }
+    });
+
+    // Only focus textarea if user clicks inside it
+    urlOpenerInput.addEventListener('mousedown', function(e) {
+      if (document.activeElement !== urlOpenerInput) {
+        urlOpenerInput.focus();
       }
     });
   </script>
