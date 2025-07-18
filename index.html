@@ -234,6 +234,14 @@
       padding: 0 2px;
     }
 
+    .highlight.focused {
+      background: #ffb74d;
+      color: #222;
+      border-radius: 3px;
+      padding: 0 2px;
+      box-shadow: 0 0 0 2px #ff9800;
+    }
+
     .checkbox-list {
       border: 2px solid #c8c8c8;
       border-radius: 8px;
@@ -252,10 +260,9 @@
       display: flex;
       background: #f7f7f7;
       align-items: center;
-      gap: 0.7em;
       font-size: 1em;
       border-radius: 4px;
-      padding: 0.5em 0.7em;
+      /* padding: 0.5em 0.7em; */
       cursor: pointer;
       transition: background 0.15s, color 0.15s, border 0.15s;
       min-width: 0;
@@ -397,15 +404,55 @@
 
     /* Image preview zoom on hover */
     #imgPreview {
-      transition: transform 0.1ase;
-      cursor: grab;
+      transition: transform 0.3s ease;
+      cursor: zoom-in;
       user-select: none;
+      transform-origin: center;
+    }
+    #imgPreview:hover {
+      transform: scale(1.5);
+      cursor: zoom-out;
     }
     #imgPreview.zoomed {
-      cursor: grabbing;
+      cursor: grab;
     }
     #imgPreview.zoomed:hover {
       cursor: grabbing;
+    }
+
+    /* Checkbox item icons */
+    .checkbox-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .checkbox-item .selection-area {
+      display: flex;
+      align-items: center;
+      gap: 0.7em;
+      padding: 8px;
+      flex: 1;
+      cursor: pointer;
+    }
+    .checkbox-item .icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px;
+      height: 24px;
+      cursor: pointer;
+    }
+    .checkbox-item.valid .icon-container svg {
+      fill: #4caf50;
+      width: 20px;
+      height: 20px;
+    }
+    .checkbox-item.invalid .icon-container svg {
+      fill: #f44336;
+      width: 20px;
+      height: 20px;
     }
   </style>
 </head>
@@ -623,7 +670,12 @@
         const selected = item.selected ? 'selected' : '';
         const validationClass = item.isValid ? 'valid' : 'invalid';
         // Show count next to span
-        return `<div class="checkbox-item ${selected} ${validationClass}" data-value="${escapeHtml(item.val)}"><input type="checkbox" data-idx="${item.idx}" value="${escapeHtml(item.val)}" ${checked}><span>${escapeHtml(item.val)} <b>(${item.count})</b></span></div>`;
+        // Add icons only for valid items
+        const iconSvg = item.isValid ? 
+          '<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M13.729 5.575c1.304-1.074 3.27-.146 3.27 1.544v9.762c0 1.69-1.966 2.618-3.27 1.544l-5.927-4.881a2 2 0 0 1 0-3.088l5.927-4.88Z" clip-rule="evenodd"/></svg><svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.271 5.575C8.967 4.501 7 5.43 7 7.12v9.762c0 1.69 1.967 2.618 3.271 1.544l5.927-4.881a2 2 0 0 0 0-3.088l-5.927-4.88Z" clip-rule="evenodd"/></svg>' :
+          '';
+        const iconContainer = item.isValid ? `<div class="icon-container">${iconSvg}</div>` : '';
+        return `<div class="checkbox-item ${selected} ${validationClass}" data-value="${escapeHtml(item.val)}"><div class="selection-area"><input type="checkbox" data-idx="${item.idx}" value="${escapeHtml(item.val)}" ${checked}><span>${escapeHtml(item.val)} <b>(${item.count})</b></span></div>${iconContainer}</div>`;
       }).join('');
     }
 
@@ -668,12 +720,14 @@
       }
     });
 
-    // Event: Checkbox-item click (single select for highlight)
+    // Event: Selection area click (single select for highlight)
     checkboxList.addEventListener('click', (e) => {
-      // Only trigger if not clicking the checkbox itself
-      if (e.target && e.target.type === 'checkbox') return;
-      const item = e.target.closest('.checkbox-item');
-      if (!item) return;
+      // Only trigger if clicking the selection area (not checkbox or arrows)
+      if (e.target.type === 'checkbox' || e.target.closest('.icon-container')) return;
+      const selectionArea = e.target.closest('.selection-area');
+      if (!selectionArea) return;
+      
+      const item = selectionArea.closest('.checkbox-item');
       const val = item.getAttribute('data-value');
       if (singleSelected === val) {
         singleSelected = '';
@@ -682,6 +736,65 @@
       }
       renderCheckboxes();
       renderFormatted();
+    });
+
+    // Navigation between highlighted items in formatted-html
+    let currentHighlightIndex = -1;
+    let allHighlights = [];
+    let currentSelectedValue = '';
+
+    checkboxList.addEventListener('click', (e) => {
+      if (e.target.tagName === 'SVG' || e.target.closest('svg')) {
+        const checkboxItem = e.target.closest('.checkbox-item');
+        if (checkboxItem && checkboxItem.classList.contains('valid') && checkboxItem.classList.contains('selected')) {
+          const searchValue = checkboxItem.getAttribute('data-value');
+          
+          // Only allow navigation if this is the currently selected item
+          if (searchValue !== singleSelected) return;
+          
+          // Determine which button was clicked (right or left)
+          const svg = e.target.tagName === 'SVG' ? e.target : e.target.closest('svg');
+          const isRightButton = svg === checkboxItem.querySelector('.icon-container svg:first-child');
+          
+          // Find all highlights for this search value
+          allHighlights = Array.from(formattedOutput.querySelectorAll('.highlight'));
+          
+          if (allHighlights.length > 0) {
+            // Remove previous focus
+            allHighlights.forEach(h => h.classList.remove('focused'));
+            
+            if (isRightButton) {
+              // Go to previous highlight (left arrow = previous)
+              currentHighlightIndex = (currentHighlightIndex - 1 + allHighlights.length) % allHighlights.length;
+            } else {
+              // Go to next highlight (right arrow = next)
+              currentHighlightIndex = (currentHighlightIndex + 1) % allHighlights.length;
+            }
+            
+            // Focus on current highlight
+            const currentHighlight = allHighlights[currentHighlightIndex];
+            if (currentHighlight) {
+              currentHighlight.classList.add('focused');
+              
+              // Scroll to the highlighted element
+              currentHighlight.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+                inline: 'center'
+              });
+            }
+          }
+        }
+      }
+    });
+
+    // Reset highlight focus when search changes
+    highlightInput.addEventListener('input', () => {
+      currentHighlightIndex = -1;
+      allHighlights = [];
+      currentSelectedValue = '';
+      // Remove all focused highlights
+      formattedOutput.querySelectorAll('.highlight.focused').forEach(h => h.classList.remove('focused'));
     });
 
     // Copy button logic
@@ -776,50 +889,73 @@
       updateSelectedField();
     });
 
-    // Image preview pan and zoom functionality
+    // Image preview hover zoom and mouse move functionality
     let isZoomed = false;
     let isDragging = false;
     let startX, startY, translateX = 0, translateY = 0, scale = 1;
+    const zoomScale = 1.5; // Zoom scale factor
 
-    imgPreview.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? 0.9 : 1.1;
-      scale = Math.max(0.5, Math.min(3, scale * delta));
-      updateImageTransform();
+    // Get the container of imgPreview
+    const imgContainer = imgPreview.parentElement;
+
+    imgContainer.addEventListener('mouseover', () => {
+      if (!isZoomed) {
+        imgPreview.style.transform = `scale(${zoomScale})`;
+        isZoomed = true;
+      }
+    });
+
+    imgContainer.addEventListener('mouseout', () => {
+      if (isZoomed && !isDragging) {
+        imgPreview.style.transform = 'scale(1)';
+        isZoomed = false;
+        translateX = 0;
+        translateY = 0;
+        imgPreview.style.transformOrigin = 'center';
+      }
+    });
+
+    imgContainer.addEventListener('mousemove', (e) => {
+      if (isZoomed) {
+        const rect = imgContainer.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        imgPreview.style.transformOrigin = `${x}% ${y}%`;
+      }
     });
 
     imgPreview.addEventListener('mousedown', (e) => {
-      if (scale > 1) {
+      if (isZoomed) {
         isDragging = true;
-        imgPreview.classList.add('zoomed');
         startX = e.clientX - translateX;
         startY = e.clientY - translateY;
       }
     });
 
     document.addEventListener('mousemove', (e) => {
-      if (isDragging && scale > 1) {
+      if (isDragging && isZoomed) {
         translateX = e.clientX - startX;
         translateY = e.clientY - startY;
-        updateImageTransform();
+        const rect = imgContainer.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        imgPreview.style.transform = `translate(${translateX}px, ${translateY}px) scale(${zoomScale})`;
+        imgPreview.style.transformOrigin = `${x}% ${y}%`;
       }
     });
 
     document.addEventListener('mouseup', () => {
       isDragging = false;
-      imgPreview.classList.remove('zoomed');
     });
-
-    function updateImageTransform() {
-      imgPreview.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-    }
 
     // Reset zoom when changing images
     function resetImageZoom() {
-      scale = 1;
+      isZoomed = false;
+      isDragging = false;
       translateX = 0;
       translateY = 0;
-      updateImageTransform();
+      imgPreview.style.transform = 'scale(1)';
+      imgPreview.style.transformOrigin = 'center';
     }
 
     // Live update image preview and carousel
