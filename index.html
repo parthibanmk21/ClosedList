@@ -33,6 +33,10 @@
       box-sizing: border-box;
     }
 
+    p{
+      margin-top: 0px;
+    }
+
     .flex-item {
       background: #fff;
       border-radius: 12px;
@@ -223,6 +227,7 @@
       font-family: inherit;
       line-height: 1.5em;
       font-size: 1em;
+      padding: 8px;
       margin-bottom: 0.2em;
       letter-spacing: 0.03em;
     }
@@ -454,6 +459,283 @@
       width: 20px;
       height: 20px;
     }
+
+    /* SD/LD Count Display */
+    .sdld-count {
+      margin-top: 10px;
+      font-size: 1em;
+      color: #333;
+    }
+
+    /* Search Field Container */
+    .search-field-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Search Field with Clear Button */
+    .search-field-with-clear {
+      padding-right: 2.2em;
+    }
+
+    /* Clear Highlight Button */
+    .clear-highlight-btn {
+      position: absolute;
+      right: 0.5em;
+      background: none;
+      border: none;
+      font-size: 1.2em;
+      color: #888;
+      cursor: pointer;
+      height: 55%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    /* Arrow Icon Rotation */
+    .arrow-icon-rotated {
+      transition: transform 0.2s;
+      transform: rotate(180deg);
+    }
+
+    /* Popup Background */
+    .popup-background {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Image Popup Content */
+    .image-popup-content {
+      background: #fff;
+      border-radius: 12px;
+      margin: 16px;
+      width: calc(95vw - 32px);
+      height: calc(95vh - 32px);
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+    }
+
+    /* Image Popup Sidebar */
+    .image-popup-sidebar {
+      flex: 0 0 30%;
+      padding: 24px 12px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #f7f7f7;
+    }
+
+    /* Image Link Input */
+    .image-link-input {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      resize: none;
+      font-size: 1em;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      flex: 1 1 auto;
+    }
+
+    /* Clean Links Button */
+    .clean-links-btn {
+      margin-top: 8px;
+      padding: 7px 16px;
+      border-radius: 6px;
+      border: none;
+      background: #1a4fa0;
+      color: #fff;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .clean-links-btn:hover {
+      background: #163e7a;
+    }
+
+    .clean-links-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Image Preview Container */
+    .image-preview-container {
+      flex: 1 1 70%;
+      display: flex;
+      flex-direction: column;
+      background: #eaeaea;
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* Image Display Area */
+    .image-display-area {
+      flex: 1 1 auto;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      min-width: 0;
+      position: relative;
+    }
+
+    /* Carousel Button */
+    .carousel-btn {
+      position: absolute;
+      z-index: 2;
+      background: rgba(0,0,0,0.3);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      font-size: 1.5em;
+    }
+
+    .carousel-btn.prev {
+      left: 8px;
+    }
+
+    .carousel-btn.next {
+      right: 8px;
+    }
+
+    /* Image Preview */
+    .image-preview {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 8px;
+      object-fit: contain;
+      background: #fff;
+      display: block;
+      margin: auto;
+    }
+
+    /* URL Opener Popup Content */
+    .url-opener-popup-content {
+      background: #fff;
+      border-radius: 12px;
+      margin: 16px;
+      height: 50%;
+      width: calc(90vw - 32px);
+      max-width: 700px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      overflow: hidden;
+    }
+
+    /* URL Opener Input */
+    .url-opener-input {
+      width: calc(100% - 32px);
+      height: 100%;
+      margin: 0 16px 8px 16px;
+      min-height: 80px;
+      resize: none;
+      font-size: 1em;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    /* URL Opener Buttons Container */
+    .url-opener-buttons {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      justify-content: flex-end;
+      margin: 0 16px 16px 16px;
+    }
+
+    /* URL Opener Button */
+    .url-opener-btn {
+      padding: 7px 16px;
+      border-radius: 6px;
+      border: none;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .url-opener-btn.clean {
+      background: #8a8a8a;
+      color: #fff;
+    }
+
+    .url-opener-btn.clean:hover {
+      background: #6a6a6a;
+    }
+
+    .url-opener-btn.open {
+      background: #1a4fa0;
+      color: #fff;
+    }
+
+    .url-opener-btn.open:hover {
+      background: #163e7a;
+    }
+
+    .url-opener-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Thumbnail Image */
+    .thumbnail-img {
+      height: 40px;
+      width: auto;
+      border-radius: 6px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      cursor: pointer;
+      border: 2px solid transparent;
+      background: #fff;
+      transition: border 0.15s;
+    }
+
+    .thumbnail-img.active {
+      border-color: #1a4fa0;
+    }
+
+    /* Status Text Colors */
+    .status-fail {
+      color: red;
+    }
+
+    .status-pass {
+      color: #00ca00;
+    }
+
+    /* Popup Labels */
+    .popup-label {
+      font-size: 1em;
+      margin-bottom: 8px;
+      color: #222;
+    }
+
+    .popup-label.url-opener {
+      margin: 16px 0 8px 16px;
+    }
   </style>
 </head>
 
@@ -468,14 +750,14 @@
     <div class="flex-item">
       <h3>Formatted HTML Output:</h3>
       <div class="formatted-html" id="formattedOutput"></div>
-      <div id="sdldCount" style="margin-top: 10px; font-size: 1em; color: #333;"></div>
+      <div id="sdldCount" class="sdld-count"></div>
     </div>
     <!-- Third Div: Search/Highlight/Checkboxes -->
     <div class="flex-item-3" id="flexItem3">
       <h3>Enter the text to highlight</h3>
-      <div style="position: relative; display: flex; align-items: center; justify-content: center;">
-        <input class="search-field" id="highlightInput" type="text" placeholder="Type to highlight..." style="padding-right: 2.2em;" />
-        <button id="clearHighlightBtn" type="button" style="position: absolute; right: 0.5em; background: none; border: none; font-size: 1.2em; color: #888; cursor: pointer; height: 55%; display: flex; align-items: flex-star; justify-content: center;">&times;</button>
+      <div class="search-field-container">
+        <input class="search-field search-field-with-clear" id="highlightInput" type="text" placeholder="Type to highlight..." />
+        <button id="clearHighlightBtn" type="button" class="clear-highlight-btn">&times;</button>
       </div>
       <div class="checkbox-list" id="checkboxList"></div>
       <input class="selected-field" id="selectedValues" type="text" placeholder="Selected values..." readonly />
@@ -485,7 +767,7 @@
       <div class="flex-arrow" id="flexArrow">
         <svg id="arrowIcon" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#4f4f4f" viewBox="0 0 24 24"
-          style="transition: transform 0.2s; transform: rotate(180deg);">
+          class="arrow-icon-rotated">
           <path fill-rule="evenodd"
             d="M10 4H4c-1.10457 0-2 .89543-2 2v12c0 1.1046.89543 2 2 2h6V4ZM7.79283 9.29289c.39053.39053.39053 1.02371 0 1.41421L6.5 11.9999l1.29283 1.2929c.39053.3905.39053 1.0237 0 1.4142-.39052.3905-1.02368.3905-1.41421 0l-1.99994-2c-.39052-.3905-.39052-1.0236 0-1.4142l1.99994-1.99991c.39053-.39052 1.02369-.39052 1.41421 0Z"
             clip-rule="evenodd" />
@@ -509,37 +791,31 @@
       </div>
     </div>
     <!-- Image Popup -->
-    <div id="imagePopupBg"
-      style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:1000; justify-content:center; align-items:center;">
-      <div id="imagePopupContent" style="background:#fff; border-radius:12px; margin:16px; width:calc(95vw - 32px); height:calc(95vh - 32px); display:flex; flex-direction:row; overflow:hidden;">
-        <div
-          style="flex:0 0 30%; padding:24px 12px 24px 24px; display:flex; flex-direction:column; justify-content:center; background:#f7f7f7;">
-          <label for='imgLinkInput' style='font-size:1em; margin-bottom:8px; color:#222;'>Image Link(s)</label>
-          <textarea id="imgLinkInput" placeholder="Paste image link(s), separated by commas..."
-            style="width:100%; height:100%; min-height:0; resize:none; font-size:1em; padding:8px; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; flex:1 1 auto;"></textarea>
-          <button id="cleanLinksBtn" type="button" style="margin-top:8px; padding:7px 16px; border-radius:6px; border:none; background:#1a4fa0; color:#fff; font-size:1em; cursor:pointer;">Clean Links</button>
+    <div id="imagePopupBg" class="popup-background">
+      <div id="imagePopupContent" class="image-popup-content">
+        <div class="image-popup-sidebar">
+          <label for='imgLinkInput' class="popup-label">Image Link(s)</label>
+          <textarea id="imgLinkInput" class="image-link-input" placeholder="Paste image link(s), separated by commas..."></textarea>
+          <button id="cleanLinksBtn" type="button" class="clean-links-btn">Clean Links</button>
         </div>
-        <div style="flex:1 1 70%; display:flex; flex-direction:column; background:#eaeaea; position:relative; min-width:0; min-height:0; overflow:hidden;">
-          <div style="flex:1 1 auto; padding:8px; display:flex; align-items:center; justify-content:center; min-height:0; min-width:0; position:relative;">
-            <button id="carouselPrev" style="position:absolute; left:8px; z-index:2; background:rgba(0,0,0,0.3); border:none; border-radius:50%; width:36px; height:36px; display:none; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:1.5em;">&#8592;</button>
-            <img id="imgPreview" src="" alt="Preview"
-              style="max-width:100%; max-height:100%; border-radius:8px; object-fit:contain; background:#fff; display:block; margin:auto;" />
-            <button id="carouselNext" style="position:absolute; right:8px; z-index:2; background:rgba(0,0,0,0.3); border:none; border-radius:50%; width:36px; height:36px; display:none; align-items:center; justify-content:center; cursor:pointer; color:#fff; font-size:1.5em;">&#8594;</button>
+        <div class="image-preview-container">
+          <div class="image-display-area">
+            <button id="carouselPrev" class="carousel-btn prev">&#8592;</button>
+            <img id="imgPreview" class="image-preview" src="" alt="Preview" />
+            <button id="carouselNext" class="carousel-btn next">&#8594;</button>
           </div>
           <div id="thumbsRow"></div>
         </div>
       </div>
     </div>
     <!-- URL Opener Popup -->
-    <div id="urlOpenerPopupBg"
-      style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:1000; justify-content:center; align-items:center;">
-      <div id="urlOpenerPopupContent" style="background:#fff; border-radius:12px; margin:16px; width:calc(90vw - 32px); max-width:500px; display:flex; flex-direction:column; align-items:stretch; overflow:hidden;">
-        <label for='urlOpenerInput' style='font-size:1em; margin:16px 0 8px 16px; color:#222;'>Enter URL(s)</label>
-        <textarea id="urlOpenerInput" placeholder="Paste URLs, separated by commas or newlines..."
-          style="width:calc(100% - 32px); margin:0 16px 8px 16px; min-height:80px; resize:none; font-size:1em; padding:8px; border-radius:8px; border:1px solid #ccc; box-sizing:border-box;"></textarea>
-        <div style="display:flex; flex-direction:row; gap:8px; justify-content:flex-end; margin:0 16px 16px 16px;">
-          <button id="urlOpenerCleanBtn" type="button" style="padding:7px 16px; border-radius:6px; border:none; background:#1a4fa0; color:#fff; font-size:1em; cursor:pointer;">Clean</button>
-          <button id="urlOpenerOpenBtn" type="button" style="padding:7px 16px; border-radius:6px; border:none; background:#00a000; color:#fff; font-size:1em; cursor:pointer;">Open in Tab</button>
+    <div id="urlOpenerPopupBg" class="popup-background">
+      <div id="urlOpenerPopupContent" class="url-opener-popup-content">
+        <label for='urlOpenerInput' class="popup-label url-opener">Enter URL(s)</label>
+        <textarea id="urlOpenerInput" class="url-opener-input" placeholder="Paste URLs, separated by commas or newlines..."></textarea>
+        <div class="url-opener-buttons">
+          <button id="urlOpenerCleanBtn" type="button" class="url-opener-btn clean">Clean</button>
+          <button id="urlOpenerOpenBtn" type="button" class="url-opener-btn open">Open in Each Tab</button>
         </div>
       </div>
     </div>
@@ -581,16 +857,28 @@
       return textNodes;
     }
 
-    // Helper: Clean links (same as imgLinkInput)
-    function cleanLinksInput(raw) {
-      return raw.split(/,|\n/).map(link => {
-        // Try to extract http(s) links ending with .jpg, .jpeg, .png, or any valid URL
-        let match = link.match(/https?:[^\s,]*?\.(jpg|jpeg|png)/i);
-        if (match) return match[0].trim();
-        // Otherwise, try to extract any http(s) link
-        match = link.match(/https?:[^\s,]*/i);
-        return match ? match[0].trim() : '';
-      }).filter(Boolean);
+    // Helper: Extract all valid URLs (http/https) from a string, even if pasted together
+    function extractAllUrls(raw) {
+      // Add space before each "http" to separate concatenated URLs
+      let processedRaw = raw.replace(/([^\s])https?:\/\//gi, '$1 http://');
+      // Also handle https://
+      processedRaw = processedRaw.replace(/([^\s])https?:\/\//gi, '$1 https://');
+      
+      // Now extract URLs from the processed string
+      let urls = [];
+      const urlRegex = /https?:\/\/[^\s,\n"'<>\[\](){}]+/gi;
+      let match;
+      
+      while ((match = urlRegex.exec(processedRaw)) !== null) {
+        let url = match[0];
+        // Remove any brackets before or after the URL
+        url = url.replace(/^[\[\({<]+|[\]\)}>]+$/g, '');
+        // Clean up any trailing punctuation that might be part of the URL
+        url = url.replace(/[.,;!?]+$/, '');
+        urls.push(url);
+      }
+      
+      return urls;
     }
 
     // DOM Elements
@@ -669,10 +957,10 @@
       });
       // SD color and fail
       let sdColor = sdCount < 55 ? 'red' : '#00ca00';
-      let sdFail = sdCount < 55 ? ' <span style="color:red">(Fail)</span>' : ' <span style="color:#00ca00">(Pass)</span>';
+      let sdFail = sdCount < 55 ? ' <span class="status-fail">(Fail)</span>' : ' <span class="status-pass">(Pass)</span>';
       // LD color and fail
       let ldColor = ldCount < 3 ? 'red' : '#00ca00';
-      let ldFail = ldCount < 3 ? ' <span style="color:red">(Fail)</span>' : ' <span style="color:#00ca00">(Pass)</span>';
+      let ldFail = ldCount < 3 ? ' <span class="status-fail">(Fail)</span>' : ' <span class="status-pass">(Pass)</span>';
       sdldDiv.innerHTML = `SD count: <span style="color:${sdColor}">${sdCount}</span>${sdFail}, LD count: <span style="color:${ldColor}">${ldCount}</span>${ldFail}`;
     }
 
@@ -686,7 +974,18 @@
       }
       // Prepare array with validity and count
       let checkboxData = allCheckboxValues.map((val, idx) => {
-        const count = values.reduce((acc, v) => acc + (v.toLowerCase().includes(val.toLowerCase()) ? 1 : 0), 0);
+        // Count actual occurrences of the search term in the HTML content
+        let count = 0;
+        values.forEach(v => {
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = v;
+          const textContent = tempDiv.textContent || tempDiv.innerText || '';
+          const regex = new RegExp(val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+          const matches = textContent.match(regex);
+          if (matches) {
+            count += matches.length;
+          }
+        });
         const isValid = count > 0;
         return { val, idx, checked: checkedSet.has(val), selected: singleSelected === val, isValid, count };
       });
@@ -848,11 +1147,11 @@
       flexItem3Visible = !flexItem3Visible;
       if (flexItem3Visible) {
         flexItem3.style.display = '';
-        arrowIcon.style.transform = 'rotate(180deg)'; // Left
+        arrowIcon.classList.add('arrow-icon-rotated'); // Left
         flexArrow.classList.add('selected');
       } else {
         flexItem3.style.display = 'none';
-        arrowIcon.style.transform = 'rotate(0deg)'; // Right
+        arrowIcon.classList.remove('arrow-icon-rotated'); // Right
         flexArrow.classList.remove('selected');
       }
     });
@@ -897,14 +1196,22 @@
       toggleImagePopup();
     });
 
-    // Keyboard shortcuts for arrowIcon (Q) and imgPopup (E)
+    // Keyboard shortcuts for arrowIcon (Q), imgPopup (W), and urlOpener (E)
     document.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.key === 'q' || e.key === 'Q') {
         flexArrow.click();
       }
-      if (e.key === 'e' || e.key === 'E') {
+      if (e.key === 'w' || e.key === 'W') {
         toggleImagePopup();
+      }
+      if (e.key === 'e' || e.key === 'E') {
+        if (urlOpenerPopupBg.style.display === 'flex') {
+          urlOpenerPopupBg.style.display = 'none';
+          urlOpenerInput.value = '';
+        } else {
+          urlOpenerPopupBg.style.display = 'flex';
+        }
       }
     });
 
@@ -913,6 +1220,12 @@
     clearHighlightBtn.addEventListener('click', () => {
       highlightInput.value = '';
       highlightText = '';
+      // Clear all highlights from formatted output
+      formattedOutput.querySelectorAll('.highlight').forEach(h => {
+        const parent = h.parentNode;
+        parent.replaceChild(document.createTextNode(h.textContent), h);
+        parent.normalize(); // Merge adjacent text nodes
+      });
       renderFormatted();
       renderCheckboxes();
       singleSelected = '';
@@ -991,8 +1304,8 @@
 
     // Live update image preview and carousel
     function updateImagePreview() {
-      // Split by comma, trim, filter empty
-      imageLinks = imgLinkInput.value.split(',').map(v => v.trim()).filter(v => v.length > 0);
+      // Split by comma or newline, trim, filter empty
+      imageLinks = imgLinkInput.value.split(/[\s,\n]+/).map(v => v.trim()).filter(v => v.length > 0);
       if (imageLinks.length === 0) {
         imgPreview.src = '';
         carouselPrev.style.display = 'none';
@@ -1013,7 +1326,7 @@
       }
       // Render all thumbnails
       thumbsRow.innerHTML = imageLinks.map((src, idx) =>
-        `<img src="${src}" data-idx="${idx}" style="height:40px; width:auto; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,0.12); cursor:pointer; border:2px solid ${idx === currentImgIdx ? '#1a4fa0' : 'transparent'}; background:#fff; transition:border 0.15s;">`
+        `<img src="${src}" data-idx="${idx}" class="thumbnail-img ${idx === currentImgIdx ? 'active' : ''}">`
       ).join('');
     }
 
@@ -1088,12 +1401,9 @@
     // Clean links button logic
     const cleanLinksBtn = document.getElementById('cleanLinksBtn');
     cleanLinksBtn.addEventListener('click', () => {
-      // Split by comma, extract http(s)...jpg|jpeg|png
-      const cleaned = imgLinkInput.value.split(',').map(link => {
-        const match = link.match(/https?[^\s,]*?\.(jpg|jpeg|png)/i);
-        return match ? match[0] : '';
-      }).filter(Boolean);
-      imgLinkInput.value = cleaned.join(', ');
+      // Use the same URL extraction logic as URL opener
+      const cleaned = extractAllUrls(imgLinkInput.value);
+      imgLinkInput.value = cleaned.join('\n');
       updateImagePreview();
     });
 
@@ -1121,17 +1431,15 @@
       }
     });
     urlOpenerCleanBtn.addEventListener('click', () => {
-      // Use the same cleaning logic as imgLinkInput
-      const cleaned = cleanLinksInput(urlOpenerInput.value);
-      urlOpenerInput.value = cleaned.join(', ');
+      // Extract all valid URLs and join with a space
+      const cleaned = extractAllUrls(urlOpenerInput.value);
+      urlOpenerInput.value = cleaned.join('\n');
     });
     urlOpenerOpenBtn.addEventListener('click', () => {
       // Open all valid URLs in new tabs (synchronously, like bulk url opener)
-      const urls = urlOpenerInput.value.split(/,|\n/).map(link => link.trim()).filter(Boolean);
+      const urls = extractAllUrls(urlOpenerInput.value);
       urls.forEach(url => {
-        if (/^https?:\/\//i.test(url)) {
-          window.open(url, '_blank');
-        }
+        window.open(url, '_blank');
       });
     });
 
@@ -1150,19 +1458,7 @@
       }
     });
 
-    // Keyboard shortcut for URL opener popup (w)
-    document.addEventListener('keydown', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-      if ((e.key === 'w' || e.key === 'W')) {
-        if (urlOpenerPopupBg.style.display === 'flex') {
-          urlOpenerPopupBg.style.display = 'none';
-          urlOpenerInput.value = '';
-        } else {
-          urlOpenerPopupBg.style.display = 'flex';
-          // Do not focus urlOpenerInput here
-        }
-      }
-    });
+
 
     // Only focus textarea if user clicks inside it
     urlOpenerInput.addEventListener('mousedown', function(e) {
