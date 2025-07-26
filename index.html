@@ -783,6 +783,16 @@
       margin: 0px;
     }
 
+    .format-btns-div{
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .format-btns {
+      height: 30px;
+    }
     .prism-editor:focus {
       border: 2px solid #242424;
       background: #fafafa;
@@ -816,6 +826,14 @@
       <h3>Enter your base data here</h3>
       <!-- Replace textarea with Prism.js editor -->
       <pre class="prism-editor" id="mainInput" contenteditable="true" spellcheck="false"></pre>
+      <div class="format-btns-div">
+        <div style="width: 100%;display: flex;flex-direction: row; gap: 8px; height: 30px;">
+          <button id="wrapPBtn" class="format-btns" type="button" style="margin-left:6px;padding:3px 10px;border-radius:4px;border:none;background:#eaeaea;color:#222;font-size:0.95em;cursor:pointer;">p</button>
+          <button id="wrapUlBtn" class="format-btns"type="button" style="margin-left:2px;padding:3px 10px;border-radius:4px;border:none;background:#eaeaea;color:#222;font-size:0.95em;cursor:pointer;">ul</button>
+          <button id="wrapLiBtn" class="format-btns"type="button" style="margin-left:2px;padding:3px 10px;border-radius:4px;border:none;background:#eaeaea;color:#222;font-size:0.95em;cursor:pointer;">li</button>
+        </div>
+        <button id="cleanEditorBtn" type="button" style="padding:7px 16px;border-radius:6px;border:none;background:#1a4fa0;color:#fff;font-size:1em;cursor:pointer;transition:background 0.15s;">Clean</button>
+      </div>  
     </div>
     <!-- Second Div: Formatted HTML Display -->
     <div class="flex-item">
@@ -847,6 +865,7 @@
         </svg>
       </div>
       <div class="flex-arrow" id="flexArrow">
+        <!-- Never change this icon -->
         <svg id="imgPopup" class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
           fill="#4f4f4f" viewBox="0 0 24 24" style="cursor: pointer;">
           <path fill-rule="evenodd" d="M13 10a1 1 0 0 1 1-1h.01a1 1 0 1 1 0 2H14a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
@@ -1709,6 +1728,84 @@
       // Remove all focused highlights
       formattedOutput.querySelectorAll('.highlight.focused').forEach(h => h.classList.remove('focused'));
     });
+
+    // Clean button logic for prism-editor
+    const cleanEditorBtn = document.getElementById('cleanEditorBtn');
+    cleanEditorBtn.addEventListener('click', () => {
+      // Get current editor text
+      let text = getEditorText(mainInput);
+
+      // Replace HTML coded characters with their actual character
+      // Handles &amp;, &lt;, &gt;, &quot;, &#39;, and numeric codes
+      text = text.replace(/&amp;/g, '&')
+               .replace(/&lt;/g, '<')
+               .replace(/&gt;/g, '>')
+               .replace(/&quot;/g, '"')
+               .replace(/&#39;/g, "'")
+               .replace(/&#(\d+);/g, (m, code) => String.fromCharCode(code));
+
+      // Set cleaned text back to editor with highlighting
+      setEditorContent(mainInput, text);
+
+      // Trigger input event to update everything else
+      mainInput.dispatchEvent(new Event('input'));
+    });
+
+    // Helper: Wrap selected text in Prism editor
+    function wrapSelection(tag) {
+      const editor = mainInput;
+      const sel = window.getSelection();
+      if (!sel.rangeCount) return;
+      
+      const range = sel.getRangeAt(0);
+      if (!editor.contains(range.commonAncestorContainer)) return;
+      
+      // Get the full editor content and selection positions
+      const content = getEditorText(editor);
+      const start = getTextOffset(editor, range.startContainer, range.startOffset);
+      const end = getTextOffset(editor, range.endContainer, range.endOffset);
+      
+      // Create the wrapped content
+      const before = content.substring(0, start);
+      const selected = content.substring(start, end);
+      const after = content.substring(end);
+      const wrapped = before + `<${tag}>` + selected + `</${tag}>` + after;
+      
+      // Update editor content
+      setEditorContent(editor, wrapped);
+      
+      // Update highlighting and trigger change event
+      editor.dispatchEvent(new Event('input'));
+      editor.focus();
+    }
+
+    // Helper: Get text offset for a node and position
+    function getTextOffset(root, node, offset) {
+      const walker = document.createTreeWalker(
+        root,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+      );
+      
+      let totalOffset = 0;
+      let currentNode = walker.nextNode();
+      
+      while (currentNode) {
+        if (currentNode === node) {
+          return totalOffset + offset;
+        }
+        totalOffset += currentNode.length;
+        currentNode = walker.nextNode();
+      }
+      
+      return totalOffset;
+    }
+
+    // Add event listeners for wrap buttons
+    document.getElementById('wrapPBtn').addEventListener('click', () => wrapSelection('p'));
+    document.getElementById('wrapUlBtn').addEventListener('click', () => wrapSelection('ul'));
+    document.getElementById('wrapLiBtn').addEventListener('click', () => wrapSelection('li'));
   </script>
 </body>
 
