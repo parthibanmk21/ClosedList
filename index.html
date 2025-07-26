@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ClosedList</title>
+  <!-- Add Prism.js CSS for syntax highlighting -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
   <style>
     html,
     body {
@@ -33,7 +35,7 @@
       box-sizing: border-box;
     }
 
-    p{
+    p {
       margin-top: 0px;
     }
 
@@ -87,18 +89,21 @@
       border-radius: 8px;
       padding: 4px;
     }
+
     .flex-arrow.selected {
       background: #dddedf;
       box-shadow: 0 2px 8px rgba(26, 79, 160, 0.08);
     }
+
     .flex-arrow:hover {
       background: #dddedf;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
     }
+
     .flex-arrow svg {
       transition: fill 0.18s, transform 0.2s;
     }
-    
+
     .flex-item-3 h3 {
       margin: 0 0 0.5em 0;
       font-size: 1.1em;
@@ -218,13 +223,12 @@
       background: #f0f0f0;
       border-radius: 6px;
       padding: 1em;
-      font-family: 'Fira Mono', monospace;
+      font-family: Georgia, Times, 'Times New Roman', serif;
       white-space: pre-wrap;
       word-break: break-word;
       flex: 1 1 0;
       min-height: 0;
       overflow: auto;
-      font-family: inherit;
       line-height: 1.5em;
       font-size: 1em;
       padding: 8px;
@@ -373,10 +377,23 @@
       }
     } */
     /* Syntax highlighting classes */
-    .hl-tag { color: #1a4fa0; font-weight: bold; }
-    .hl-attr { color: #b76b00; }
-    .hl-value { color: #008c6e; }
-    .hl-comment { color: #909090; font-style: italic; }
+    .hl-tag {
+      color: #1a4fa0;
+      font-weight: bold;
+    }
+
+    .hl-attr {
+      color: #b76b00;
+    }
+
+    .hl-value {
+      color: #008c6e;
+    }
+
+    .hl-comment {
+      color: #909090;
+      font-style: italic;
+    }
 
     /* Thumbnails row for image popup */
     #thumbsRow {
@@ -395,12 +412,13 @@
       box-sizing: border-box;
       background: #eaeaea;
     }
+
     #thumbsRow img {
       flex-shrink: 0;
       height: 40px;
       width: auto;
       border-radius: 6px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
       cursor: pointer;
       border: 2px solid transparent;
       background: #fff;
@@ -414,13 +432,16 @@
       user-select: none;
       transform-origin: center;
     }
+
     #imgPreview:hover {
       transform: scale(1.5);
       cursor: zoom-out;
     }
+
     #imgPreview.zoomed {
       cursor: grab;
     }
+
     #imgPreview.zoomed:hover {
       cursor: grabbing;
     }
@@ -432,6 +453,7 @@
       align-items: center;
       justify-content: space-between;
     }
+
     .checkbox-item .selection-area {
       display: flex;
       align-items: center;
@@ -440,6 +462,7 @@
       flex: 1;
       cursor: pointer;
     }
+
     .checkbox-item .icon-container {
       display: flex;
       align-items: center;
@@ -449,11 +472,13 @@
       height: 24px;
       cursor: pointer;
     }
+
     .checkbox-item.valid .icon-container svg {
       fill: #4caf50;
       width: 20px;
       height: 20px;
     }
+
     .checkbox-item.invalid .icon-container svg {
       fill: #f44336;
       width: 20px;
@@ -509,7 +534,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0, 0, 0, 0.7);
       z-index: 1000;
       justify-content: center;
       align-items: center;
@@ -600,7 +625,7 @@
     .carousel-btn {
       position: absolute;
       z-index: 2;
-      background: rgba(0,0,0,0.3);
+      background: rgba(0, 0, 0, 0.3);
       border: none;
       border-radius: 50%;
       width: 36px;
@@ -706,7 +731,7 @@
       height: 40px;
       width: auto;
       border-radius: 6px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
       cursor: pointer;
       border: 2px solid transparent;
       background: #fff;
@@ -736,6 +761,49 @@
     .popup-label.url-opener {
       margin: 16px 0 8px 16px;
     }
+
+    .prism-editor {
+      min-height: 120px;
+      max-height: 100%;
+      height: 100%;
+      background: #eeeeee;
+      border: 2px solid #eeeeee;
+      border-radius: 8px;
+      padding: 8px;
+      font-family: Georgia, Times, 'Times New Roman', serif;
+      font-size: 1em;
+      font-weight: 200;
+      line-height: 1.5em;
+      overflow-y: auto;
+      resize: none;
+      outline: none;
+      color: #222;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0px;
+    }
+
+    .prism-editor:focus {
+      border: 2px solid #242424;
+      background: #fafafa;
+    }
+
+    /* Override Prism.js tag color */
+    .token.tag {
+      color: #204cd1 !important;
+    }
+
+    .token.attr-name {
+      color: #d10800 !important;
+    }
+
+    /* Invalid HTML tag highlight */
+    .token.tag.invalid-tag {
+      color: #eb0a00 !important;
+      background: #fff0f0;
+      border-radius: 2px;
+      padding: 0 2px;
+    }
   </style>
 </head>
 
@@ -743,8 +811,9 @@
   <div class="container">
     <!-- First Div: Input Field -->
     <div class="flex-item">
-      <h3>Enter yor base data here</h3>
-      <textarea class="input-field" id="mainInput" rows="7" placeholder="Type values here..."></textarea>
+      <h3>Enter your base data here</h3>
+      <!-- Replace textarea with Prism.js editor -->
+      <pre class="prism-editor" id="mainInput" contenteditable="true" spellcheck="false"></pre>
     </div>
     <!-- Second Div: Formatted HTML Display -->
     <div class="flex-item">
@@ -756,7 +825,8 @@
     <div class="flex-item-3" id="flexItem3">
       <h3>Enter the text to highlight</h3>
       <div class="search-field-container">
-        <input class="search-field search-field-with-clear" id="highlightInput" type="text" placeholder="Type to highlight..." />
+        <input class="search-field search-field-with-clear" id="highlightInput" type="text"
+          placeholder="Type to highlight..." />
         <button id="clearHighlightBtn" type="button" class="clear-highlight-btn">&times;</button>
       </div>
       <div class="checkbox-list" id="checkboxList"></div>
@@ -765,18 +835,18 @@
     </div>
     <div class="flex-item-4">
       <div class="flex-arrow" id="flexArrow">
-        <svg id="arrowIcon" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+        <svg id="arrowIcon" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" style="rotate: 180deg;"
           xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#4f4f4f" viewBox="0 0 24 24"
           class="arrow-icon-rotated">
           <path fill-rule="evenodd"
-            d="M10 4H4c-1.10457 0-2 .89543-2 2v12c0 1.1046.89543 2 2 2h6V4ZM7.79283 9.29289c.39053.39053.39053 1.02371 0 1.41421L6.5 11.9999l1.29283 1.2929c.39053.3905.39053 1.0237 0 1.4142-.39052.3905-1.02368.3905-1.41421 0l-1.99994-2c-.39052-.3905-.39052-1.0236 0-1.4142l1.99994-1.99991c.39053-.39052 1.02369-.39052 1.41421 0Z"
+            d="M10 4H4c-1.10457 0-2 .89543-2 2v12c0 1.1046.89543 2 2 2h6V4ZM4.37868 9.29289c-.39052.39053-.39052 1.02371 0 1.41421l1.29283 1.2928-1.29283 1.2929c-.39052.3905-.39052 1.0237 0 1.4142.39052.3905 1.02369.3905 1.41421 0l1.99994-2c.39053-.3905.39053-1.0236 0-1.4142L5.79289 9.29289c-.39052-.39052-1.02369-.39052-1.41421 0Z"
             clip-rule="evenodd" />
           <path d="M12 20h8c1.1046 0 2-.8954 2-2V6c0-1.10457-.8954-2-2-2h-8v16Z" />
         </svg>
       </div>
       <div class="flex-arrow" id="flexArrow">
-        <svg id="imgPopup" class="w-6 h-6" aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#4f4f4f" viewBox="0 0 24 24" >
+        <svg id="imgPopup" class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+          fill="#4f4f4f" viewBox="0 0 24 24" style="cursor: pointer;">
           <path fill-rule="evenodd" d="M13 10a1 1 0 0 1 1-1h.01a1 1 0 1 1 0 2H14a1 1 0 0 1-1-1Z" clip-rule="evenodd" />
           <path fill-rule="evenodd"
             d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12c0 .556-.227 1.06-.593 1.422A.999.999 0 0 1 20.5 20H4a2.002 2.002 0 0 1-2-2V6Zm6.892 12 3.833-5.356-3.99-4.322a1 1 0 0 0-1.549.097L4 12.879V6h16v9.95l-3.257-3.619a1 1 0 0 0-1.557.088L11.2 18H8.892Z"
@@ -784,9 +854,14 @@
         </svg>
       </div>
       <div class="flex-arrow" id="urlOpenerArrow">
-        <svg id="urlOpenerIcon" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#4f4f4f" viewBox="0 0 24 24">
-          <path fill-rule="evenodd" d="M11.403 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6.403a3.01 3.01 0 0 1-1.743-1.612l-3.025 3.025A3 3 0 1 1 9.99 9.768l3.025-3.025A3.01 3.01 0 0 1 11.403 5Z" clip-rule="evenodd"/>
-          <path fill-rule="evenodd" d="M13.232 4a1 1 0 0 1 1-1H20a1 1 0 0 1 1 1v5.768a1 1 0 1 1-2 0V6.414l-6.182 6.182a1 1 0 0 1-1.414-1.414L17.586 5h-3.354a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
+        <svg id="urlOpenerIcon" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#4f4f4f" viewBox="0 0 24 24">
+          <path fill-rule="evenodd"
+            d="M11.403 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6.403a3.01 3.01 0 0 1-1.743-1.612l-3.025 3.025A3 3 0 1 1 9.99 9.768l3.025-3.025A3.01 3.01 0 0 1 11.403 5Z"
+            clip-rule="evenodd" />
+          <path fill-rule="evenodd"
+            d="M13.232 4a1 1 0 0 1 1-1H20a1 1 0 0 1 1 1v5.768a1 1 0 1 1-2 0V6.414l-6.182 6.182a1 1 0 0 1-1.414-1.414L17.586 5h-3.354a1 1 0 0 1-1-1Z"
+            clip-rule="evenodd" />
         </svg>
       </div>
     </div>
@@ -795,7 +870,8 @@
       <div id="imagePopupContent" class="image-popup-content">
         <div class="image-popup-sidebar">
           <label for='imgLinkInput' class="popup-label">Image Link(s)</label>
-          <textarea id="imgLinkInput" class="image-link-input" placeholder="Paste image link(s), separated by commas..."></textarea>
+          <textarea id="imgLinkInput" class="image-link-input"
+            placeholder="Paste image link(s), separated by commas..."></textarea>
           <button id="cleanLinksBtn" type="button" class="clean-links-btn">Clean Links</button>
         </div>
         <div class="image-preview-container">
@@ -812,7 +888,8 @@
     <div id="urlOpenerPopupBg" class="popup-background">
       <div id="urlOpenerPopupContent" class="url-opener-popup-content">
         <label for='urlOpenerInput' class="popup-label url-opener">Enter URL(s)</label>
-        <textarea id="urlOpenerInput" class="url-opener-input" placeholder="Paste URLs, separated by commas or newlines..."></textarea>
+        <textarea id="urlOpenerInput" class="url-opener-input"
+          placeholder="Paste URLs, separated by commas or newlines..."></textarea>
         <div class="url-opener-buttons">
           <button id="urlOpenerCleanBtn" type="button" class="url-opener-btn clean">Clean</button>
           <button id="urlOpenerOpenBtn" type="button" class="url-opener-btn open">Open in Each Tab</button>
@@ -820,6 +897,9 @@
       </div>
     </div>
   </div>
+  <!-- Prism.js library for syntax highlighting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
   <script>
     // Helper: Parse input into array
     function parseInput(input) {
@@ -863,12 +943,12 @@
       let processedRaw = raw.replace(/([^\s])https?:\/\//gi, '$1 http://');
       // Also handle https://
       processedRaw = processedRaw.replace(/([^\s])https?:\/\//gi, '$1 https://');
-      
+
       // Now extract URLs from the processed string
       let urls = [];
       const urlRegex = /https?:\/\/[^\s,\n"'<>\[\](){}]+/gi;
       let match;
-      
+
       while ((match = urlRegex.exec(processedRaw)) !== null) {
         let url = match[0];
         // Remove any brackets before or after the URL
@@ -877,8 +957,125 @@
         url = url.replace(/[.,;!?]+$/, '');
         urls.push(url);
       }
-      
+
       return urls;
+    }
+
+    // Helper: Get plain text from Prism editor
+    function getEditorText(editor) {
+      // Get textContent, preserving line breaks
+      return editor.innerText.replace(/\u200B/g, ''); // Remove zero-width spaces
+    }
+
+    // Helper: Save and restore caret position in contenteditable
+    function saveCaretPosition(context) {
+      const selection = window.getSelection();
+      if (!selection.rangeCount) return null;
+      const range = selection.getRangeAt(0);
+      const preSelectionRange = range.cloneRange();
+      preSelectionRange.selectNodeContents(context);
+      preSelectionRange.setEnd(range.startContainer, range.startOffset);
+      const start = preSelectionRange.toString().length;
+      return start;
+    }
+
+    function restoreCaretPosition(context, pos) {
+      let nodeStack = [context], node, foundStart = false, charIndex = 0, range = document.createRange();
+      range.setStart(context, 0);
+      range.collapse(true);
+
+      while (nodeStack.length && !foundStart) {
+        node = nodeStack.pop();
+        if (node.nodeType === 3) { // text node
+          let nextCharIndex = charIndex + node.length;
+          if (!foundStart && pos >= charIndex && pos <= nextCharIndex) {
+            range.setStart(node, pos - charIndex);
+            range.collapse(true);
+            foundStart = true;
+          }
+          charIndex = nextCharIndex;
+        } else {
+          let i = node.childNodes.length;
+          while (i--) {
+            nodeStack.push(node.childNodes[i]);
+          }
+        }
+      }
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+
+    // Helper: Set editor content with syntax highlighting and invalid tag detection
+    function setEditorContent(editor, value, caretPos = null) {
+      // Use Prism to highlight as usual
+      let html = Prism.highlight(value, Prism.languages.markup, 'markup');
+
+      // Simple invalid tag detection (unclosed or unopened tags)
+      // This is a basic check and may not cover all edge cases
+      const openTags = [];
+      const tagRegex = /<([a-zA-Z][\w:-]*)(\s[^>]*)?>|<\/([a-zA-Z][\w:-]*)>/g;
+      let match;
+      let tagPositions = [];
+      while ((match = tagRegex.exec(value)) !== null) {
+        if (match[1]) {
+          // Opening tag
+          openTags.push({ tag: match[1], index: match.index });
+          tagPositions.push({ type: 'open', tag: match[1], index: match.index });
+        } else if (match[3]) {
+          // Closing tag
+          let found = false;
+          for (let i = openTags.length - 1; i >= 0; i--) {
+            if (openTags[i].tag === match[3]) {
+              openTags.splice(i, 1);
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            // Closing tag without open tag
+            tagPositions.push({ type: 'close-invalid', tag: match[3], index: match.index });
+          } else {
+            tagPositions.push({ type: 'close', tag: match[3], index: match.index });
+          }
+        }
+      }
+      // Any tags left in openTags are unclosed
+      openTags.forEach(t => {
+        tagPositions.push({ type: 'open-invalid', tag: t.tag, index: t.index });
+      });
+
+      // Now, mark invalid tags in the highlighted HTML
+      // We'll use a regex to find tags in the highlighted HTML and add the invalid-tag class
+      // This is a best-effort approach for a live editor
+
+      // Mark closing tags without open tag
+      html = html.replace(/(<span class="token tag">)(<\/[a-zA-Z][\w:-]*>)(<\/span>)/g, (m, p1, p2, p3) => {
+        if (/<\/([a-zA-Z][\w:-]*)>/.test(p2)) {
+          const tag = p2.match(/<\/([a-zA-Z][\w:-]*)>/)[1];
+          // If this tag is in tagPositions as close-invalid, mark as invalid
+          if (tagPositions.some(tp => tp.type === 'close-invalid' && tp.tag === tag)) {
+            return `<span class="token tag invalid-tag">${p2}</span>`;
+          }
+        }
+        return m;
+      });
+
+      // Mark unclosed tags
+      html = html.replace(/(<span class="token tag">)(<([a-zA-Z][\w:-]*)(\s[^>]*)?>)(<\/span>)/g, (m, p1, p2, p3, p4, p5) => {
+        // If this tag is in tagPositions as open-invalid, mark as invalid
+        if (tagPositions.some(tp => tp.type === 'open-invalid' && tp.tag === p3)) {
+          return `<span class="token tag invalid-tag">${p2}</span>`;
+        }
+        return m;
+      });
+
+      editor.innerHTML = html;
+
+      // Restore caret position if provided
+      if (caretPos !== null) {
+        restoreCaretPosition(editor, caretPos);
+      }
     }
 
     // DOM Elements
@@ -970,7 +1167,7 @@
       let allCheckboxValues = [];
       if (highlightText.trim() !== '') {
         // Split search field by comma, colon, semicolon, pipe, trim, and filter non-empty
-        allCheckboxValues = highlightText.split(/[,:;|]/).map(v => v.trim()).filter(v => v.length > 0);
+        allCheckboxValues = highlightText.split(/[,;|]/).map(v => v.trim()).filter(v => v.length > 0);
       }
       // Prepare array with validity and count
       let checkboxData = allCheckboxValues.map((val, idx) => {
@@ -1001,7 +1198,7 @@
         const validationClass = item.isValid ? 'valid' : 'invalid';
         // Show count next to span
         // Add icons only for valid items
-        const iconSvg = item.isValid ? 
+        const iconSvg = item.isValid ?
           '<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M13.729 5.575c1.304-1.074 3.27-.146 3.27 1.544v9.762c0 1.69-1.966 2.618-3.27 1.544l-5.927-4.881a2 2 0 0 1 0-3.088l5.927-4.88Z" clip-rule="evenodd"/></svg><svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.271 5.575C8.967 4.501 7 5.43 7 7.12v9.762c0 1.69 1.967 2.618 3.271 1.544l5.927-4.881a2 2 0 0 0 0-3.088l-5.927-4.88Z" clip-rule="evenodd"/></svg>' :
           '';
         const iconContainer = item.isValid ? `<div class="icon-container">${iconSvg}</div>` : '';
@@ -1017,14 +1214,40 @@
 
     // Event: Main input change
     mainInput.addEventListener('input', () => {
-      values = parseInput(mainInput.value);
-      // Remove unchecked values from checkedSet
+      // Save caret position before re-highlighting
+      let caretPos = saveCaretPosition(mainInput);
+
+      // Get plain text from editor
+      const text = getEditorText(mainInput);
+      values = parseInput(text);
       checkedSet = new Set(values.filter(v => checkedSet.has(v)));
       renderFormatted();
       renderCheckboxes();
       updateSelectedField();
       singleSelected = '';
+
+      // Fix caret position after pressing Enter (newline)
+      // If the last character is a newline, move caret to end
+      if (
+        text.endsWith('\n') &&
+        document.activeElement === mainInput
+      ) {
+        setEditorContent(mainInput, text);
+        // Move caret to end
+        const range = document.createRange();
+        range.selectNodeContents(mainInput);
+        range.collapse(false);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } else {
+        // Re-highlight after input, restore caret
+        setEditorContent(mainInput, text, caretPos);
+      }
     });
+
+    // Initial highlight for empty editor
+    setEditorContent(mainInput, '');
 
     // Event: Highlight input change
     highlightInput.addEventListener('input', () => {
@@ -1056,9 +1279,9 @@
       if (e.target.type === 'checkbox' || e.target.closest('.icon-container')) return;
       const selectionArea = e.target.closest('.selection-area');
       if (!selectionArea) return;
-      
       const item = selectionArea.closest('.checkbox-item');
       const val = item.getAttribute('data-value');
+      const isValid = item.classList.contains('valid');
       if (singleSelected === val) {
         singleSelected = '';
       } else {
@@ -1066,6 +1289,17 @@
       }
       renderCheckboxes();
       renderFormatted();
+      // If valid, focus the first highlight
+      if (isValid && singleSelected === val) {
+        setTimeout(() => {
+          const highlights = formattedOutput.querySelectorAll('.highlight');
+          if (highlights.length > 0) {
+            highlights.forEach(h => h.classList.remove('focused'));
+            highlights[0].classList.add('focused');
+            highlights[0].scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+          }
+        }, 0);
+      }
     });
 
     // Navigation between highlighted items in formatted-html
@@ -1078,21 +1312,21 @@
         const checkboxItem = e.target.closest('.checkbox-item');
         if (checkboxItem && checkboxItem.classList.contains('valid') && checkboxItem.classList.contains('selected')) {
           const searchValue = checkboxItem.getAttribute('data-value');
-          
+
           // Only allow navigation if this is the currently selected item
           if (searchValue !== singleSelected) return;
-          
-          // Determine which button was clicked (right or left)
+
+          // Determine which button was clicked (right or left arrow)
           const svg = e.target.tagName === 'SVG' ? e.target : e.target.closest('svg');
           const isRightButton = svg === checkboxItem.querySelector('.icon-container svg:first-child');
-          
+
           // Find all highlights for this search value
           allHighlights = Array.from(formattedOutput.querySelectorAll('.highlight'));
-          
+
           if (allHighlights.length > 0) {
             // Remove previous focus
             allHighlights.forEach(h => h.classList.remove('focused'));
-            
+
             if (isRightButton) {
               // Go to previous highlight (left arrow = previous)
               currentHighlightIndex = (currentHighlightIndex - 1 + allHighlights.length) % allHighlights.length;
@@ -1100,12 +1334,12 @@
               // Go to next highlight (right arrow = next)
               currentHighlightIndex = (currentHighlightIndex + 1) % allHighlights.length;
             }
-            
+
             // Focus on current highlight
             const currentHighlight = allHighlights[currentHighlightIndex];
             if (currentHighlight) {
               currentHighlight.classList.add('focused');
-              
+
               // Scroll to the highlighted element
               currentHighlight.scrollIntoView({
                 behavior: 'smooth',
@@ -1143,20 +1377,24 @@
     const flexArrow = document.getElementById('flexArrow');
     const arrowIcon = document.getElementById('arrowIcon');
     let flexItem3Visible = true;
+
+    // Ensure only one flexArrow and arrowIcon are used
     flexArrow.addEventListener('click', () => {
       flexItem3Visible = !flexItem3Visible;
       if (flexItem3Visible) {
         flexItem3.style.display = '';
-        arrowIcon.classList.add('arrow-icon-rotated'); // Left
+        arrowIcon.style.transform = 'rotate(180deg)';
         flexArrow.classList.add('selected');
       } else {
         flexItem3.style.display = 'none';
-        arrowIcon.classList.remove('arrow-icon-rotated'); // Right
+        arrowIcon.style.transform = 'rotate(0deg)';
         flexArrow.classList.remove('selected');
       }
     });
-    // Set default selected state
+
+    // Set default selected state and icon rotation
     flexArrow.classList.add('selected');
+    arrowIcon.style.transform = 'rotate(180deg)';
 
     // Image Popup logic
     const imgPopup = document.getElementById('imgPopup');
@@ -1198,6 +1436,14 @@
 
     // Keyboard shortcuts for arrowIcon (Q), imgPopup (W), and urlOpener (E)
     document.addEventListener('keydown', (e) => {
+      // Prevent shortcuts if typing in prism-editor
+      const active = document.activeElement;
+      if (
+        active === mainInput ||
+        (active && active.classList && active.classList.contains('prism-editor'))
+      ) {
+        return;
+      }
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.key === 'q' || e.key === 'Q') {
         flexArrow.click();
@@ -1213,24 +1459,6 @@
           urlOpenerPopupBg.style.display = 'flex';
         }
       }
-    });
-
-    // Add clear button logic for highlight input
-    const clearHighlightBtn = document.getElementById('clearHighlightBtn');
-    clearHighlightBtn.addEventListener('click', () => {
-      highlightInput.value = '';
-      highlightText = '';
-      // Clear all highlights from formatted output
-      formattedOutput.querySelectorAll('.highlight').forEach(h => {
-        const parent = h.parentNode;
-        parent.replaceChild(document.createTextNode(h.textContent), h);
-        parent.normalize(); // Merge adjacent text nodes
-      });
-      renderFormatted();
-      renderCheckboxes();
-      singleSelected = '';
-      checkedSet.clear();
-      updateSelectedField();
     });
 
     // Image preview hover zoom and mouse move functionality
@@ -1461,7 +1689,7 @@
 
 
     // Only focus textarea if user clicks inside it
-    urlOpenerInput.addEventListener('mousedown', function(e) {
+    urlOpenerInput.addEventListener('mousedown', function (e) {
       if (document.activeElement !== urlOpenerInput) {
         urlOpenerInput.focus();
       }
