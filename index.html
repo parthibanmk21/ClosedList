@@ -1705,6 +1705,47 @@
       }
     });
 
+    // Handle paste events to clean up Excel data
+    mainInput.addEventListener('paste', (e) => {
+      e.preventDefault();
+      // Get pasted content as plain text
+      const text = (e.clipboardData || window.clipboardData).getData('text');
+      
+      // Get current editor content and cursor position
+      const selection = window.getSelection();
+      if (!selection.rangeCount) return;
+      
+      const range = selection.getRangeAt(0);
+      const content = getEditorText(mainInput);
+      const cursorPos = getTextOffset(mainInput, range.startContainer, range.startOffset);
+      
+      // Clean up the text:
+      // 1. Replace multiple spaces with single space
+      // 2. Trim spaces at start/end of lines
+      // 3. Remove empty lines
+      const cleanedText = text
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .join('\n');
+      
+      // Create the new content without adding extra spaces
+      const before = content.substring(0, cursorPos).trimEnd();
+      const after = content.substring(cursorPos).trimStart();
+      const newContent = before + (before && cleanedText ? '\n' : '') + cleanedText + (after ? '\n' : '') + after;
+      
+      // Update editor content
+      setEditorContent(mainInput, newContent);
+      
+      // Move cursor to end of pasted text
+      const newCursorPos = before.length + (before && cleanedText ? 1 : 0) + cleanedText.length;
+      const sel = window.getSelection();
+      restoreCaretPosition(mainInput, newCursorPos);
+      
+      // Trigger input event to update formatting
+      mainInput.dispatchEvent(new Event('input'));
+    });
+
 
 
     // Only focus textarea if user clicks inside it
@@ -1810,99 +1851,3 @@
 </body>
 
 </html>
-<!--Sub LogErrorDetails()
-
-    Dim wsSrc As Worksheet
-    Dim wsDest As Worksheet
-    Dim selCell As Range
-    Dim headerRow As Long
-    Dim headerName As String
-    Dim itemIDVal As Variant, ptgVal As Variant, ptVal As Variant
-    Dim preVal As Variant, postVal As Variant
-    Dim lastRowDest As Long
-
-    Set wsSrc = ActiveSheet
-    Set wsDest = ThisWorkbook.Sheets("Error Sheet")
-    Set selCell = ActiveCell
-
-    headerRow = 1
-    headerName = Trim(wsSrc.Cells(headerRow, selCell.Column).Value)
-
-    ' Get Post value from selected cell
-    postVal = selCell.Value
-
-    ' Get Pre value: first non-empty cell to the left in the same row
-    Dim c As Long
-    preVal = ""
-    For c = selCell.Column - 1 To 1 Step -1
-        If Trim(wsSrc.Cells(selCell.Row, c).Value) <> "" Then
-            preVal = wsSrc.Cells(selCell.Row, c).Value
-            Exit For
-        End If
-    Next c
-
-    ' Find column indexes in source sheet
-    Dim col As Long
-    Dim itemIDCol As Long, ptgCol As Long, ptCol As Long
-    itemIDCol = 0: ptgCol = 0: ptCol = 0
-
-    For col = 1 To wsSrc.Cells(headerRow, wsSrc.Columns.Count).End(xlToLeft).Column
-        Select Case LCase(Trim(wsSrc.Cells(headerRow, col).Value))
-            Case "item id": itemIDCol = col
-            Case "product type group": ptgCol = col
-            Case "product type": ptCol = col
-        End Select
-    Next col
-
-    If itemIDCol = 0 Or ptgCol = 0 Or ptCol = 0 Then
-        MsgBox "One or more required columns (Item ID, Product Type Group, Product Type) not found in the active sheet.", vbCritical
-        Exit Sub
-    End If
-
-    ' Get ID/type values
-    itemIDVal = wsSrc.Cells(selCell.Row, itemIDCol).Value
-    ptgVal = wsSrc.Cells(selCell.Row, ptgCol).Value
-    ptVal = wsSrc.Cells(selCell.Row, ptCol).Value
-
-    ' Find next empty row in Error Sheet
-    lastRowDest = wsDest.Cells(wsDest.Rows.Count, 1).End(xlUp).Row + 1
-    If lastRowDest < 2 Then lastRowDest = 2
-
-    ' Map Error Sheet columns
-    Dim destColPTG As Long, destColPT As Long, destColItemID As Long
-    Dim destColAttrName As Long, destColPre As Long, destColPost As Long
-
-    destColPTG = 0: destColPT = 0: destColItemID = 0
-    destColAttrName = 0: destColPre = 0: destColPost = 0
-
-    For col = 1 To wsDest.Cells(1, wsDest.Columns.Count).End(xlToLeft).Column
-        Select Case LCase(Trim(wsDest.Cells(1, col).Value))
-            Case "ptg": destColPTG = col
-            Case "pt": destColPT = col
-            Case "item id": destColItemID = col
-            Case "attribute name": destColAttrName = col
-            Case "pre value": destColPre = col
-            Case "post value": destColPost = col
-        End Select
-    Next col
-
-    If destColPTG = 0 Or destColPT = 0 Or destColItemID = 0 Or destColAttrName = 0 _
-        Or destColPre = 0 Or destColPost = 0 Then
-        MsgBox "One or more target columns (PTG, PT, Item ID, Attribute Name, Pre value, Post value) not found in 'Error Sheet'.", vbCritical
-        Exit Sub
-    End If
-
-    ' Write values to "Error Sheet"
-    wsDest.Cells(lastRowDest, destColPTG).Value = ptgVal
-    wsDest.Cells(lastRowDest, destColPT).Value = ptVal
-    wsDest.Cells(lastRowDest, destColItemID).Value = itemIDVal
-    wsDest.Cells(lastRowDest, destColAttrName).Value = headerName
-    wsDest.Cells(lastRowDest, destColPre).Value = preVal
-    wsDest.Cells(lastRowDest, destColPost).Value = postVal
-
-    MsgBox "Details (with Pre/Post values) logged to Error Sheet!", vbInformation
-
-End Sub
-
-
-  -->
