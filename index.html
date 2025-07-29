@@ -820,6 +820,7 @@
 </head>
 
 <body>
+
   <div class="container">
     <!-- First Div: Input Field -->
     <div class="flex-item">
@@ -881,6 +882,12 @@
           <path fill-rule="evenodd"
             d="M13.232 4a1 1 0 0 1 1-1H20a1 1 0 0 1 1 1v5.768a1 1 0 1 1-2 0V6.414l-6.182 6.182a1 1 0 0 1-1.414-1.414L17.586 5h-3.354a1 1 0 0 1-1-1Z"
             clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="flex-arrow" id="urlOpenerArrow">
+        <svg id="unitConvertor" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" 
+          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="#4f4f4f" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15v3c0 .5523.44772 1 1 1h10.5M3 15v-4m0 4h11M3 11V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v5M3 11h18m0 0v1M8 11v8m4-8v8m4-8v2m1 4h2m0 0h2m-2 0v2m0-2v-2"/>
         </svg>
       </div>
     </div>
@@ -1708,41 +1715,34 @@
     // Handle paste events to clean up Excel data
     mainInput.addEventListener('paste', (e) => {
       e.preventDefault();
-      // Get pasted content as plain text
       const text = (e.clipboardData || window.clipboardData).getData('text');
-      
-      // Get current editor content and cursor position
       const selection = window.getSelection();
       if (!selection.rangeCount) return;
-      
       const range = selection.getRangeAt(0);
       const content = getEditorText(mainInput);
       const cursorPos = getTextOffset(mainInput, range.startContainer, range.startOffset);
-      
-      // Clean up the text:
-      // 1. Replace multiple spaces with single space
-      // 2. Trim spaces at start/end of lines
-      // 3. Remove empty lines
       const cleanedText = text
         .split('\n')
         .map(line => line.trim())
         .filter(line => line.length > 0)
         .join('\n');
-      
-      // Create the new content without adding extra spaces
-      const before = content.substring(0, cursorPos).trimEnd();
-      const after = content.substring(cursorPos).trimStart();
-      const newContent = before + (before && cleanedText ? '\n' : '') + cleanedText + (after ? '\n' : '') + after;
-      
-      // Update editor content
+
+      let before, after;
+      if (!selection.isCollapsed) {
+        // There is a selection, so replace the selected text
+        const start = getTextOffset(mainInput, range.startContainer, range.startOffset);
+        const end = getTextOffset(mainInput, range.endContainer, range.endOffset);
+        before = content.substring(0, start);
+        after = content.substring(end);
+      } else {
+        // No selection, just insert at cursor
+        before = content.substring(0, cursorPos);
+        after = content.substring(cursorPos);
+      }
+      const newContent = before + cleanedText + after;
       setEditorContent(mainInput, newContent);
-      
-      // Move cursor to end of pasted text
-      const newCursorPos = before.length + (before && cleanedText ? 1 : 0) + cleanedText.length;
-      const sel = window.getSelection();
+      const newCursorPos = before.length + cleanedText.length;
       restoreCaretPosition(mainInput, newCursorPos);
-      
-      // Trigger input event to update formatting
       mainInput.dispatchEvent(new Event('input'));
     });
 
@@ -1847,6 +1847,437 @@
     document.getElementById('wrapPBtn').addEventListener('click', () => wrapSelection('p'));
     document.getElementById('wrapUlBtn').addEventListener('click', () => wrapSelection('ul'));
     document.getElementById('wrapLiBtn').addEventListener('click', () => wrapSelection('li'));
+  </script>
+  <!-- Unit Converter Popup Modal -->
+  <div id="unitConverterPopup" class="unit-converter-popup">
+    <div class="unit-converter-modal">
+      <div class="unit-converter-header">
+        <span style="font-size: 2rem; font-weight: 600;">Convert Units</span>
+        <span id="closeUnitConverter" style="font-size: 2rem; cursor: pointer; color: #888;">&times;</span>
+      </div>
+      <div class="unit-tabs">
+  <button class="unit-tab active">Length</button>
+  <button class="unit-tab">Weight</button>
+  <button class="unit-tab">Volume</button>
+  <!-- <button class="unit-tab">Speed</button>
+  <button class="unit-tab">Area</button> -->
+  <button class="unit-tab">Temperature</button>
+</div>
+<div class="unit-converter-main">
+  <div class="unit-col">
+    <div class="unit-label">Select UOM</div>
+    <input class="unit-input" placeholder="Enter Value" id="fromValue" />
+    <div class="unit-btn-row" id="fromUnitBtns">
+      <!-- Dynamic buttons will be injected here -->
+    </div>
+  </div>
+  <div class="unit-converter-arrow custom-arrow">
+    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24">
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m16 10 3-3m0 0-3-3m3 3H5v3m3 4-3 3m0 0 3 3m-3-3h14v-3"/>
+    </svg>
+  </div>
+  <div class="unit-col">
+    <div class="unit-label">Converted UOM</div>
+    <input class="unit-input" placeholder="Enter Value" id="toValue" readonly />
+    <div class="unit-btn-row" id="toUnitBtns">
+      <!-- Dynamic buttons will be injected here -->
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+  <style>
+    .unit-converter-popup {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(20,20,20,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+    .unit-converter-popup.active { display: flex; }
+    .unit-converter-modal {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 2.5vw 2vw;
+      width: 98vw;
+      max-width: 1200px;
+      box-shadow: 0 6px 32px rgba(0,0,0,0.18);
+      box-sizing: border-box;
+    }
+    .unit-converter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1.5vw;
+      color: #1f1f1f;
+    }
+    .unit-converter-main {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 2vw;
+      background: #fff;
+      border-radius: 12px;
+      padding: 2vw 0;
+      box-sizing: border-box;
+      width: 100%;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .unit-col {
+      flex: 1 1 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 1vw;
+      min-width: 220px;
+      /* max-width: 350px; */
+      box-sizing: border-box;
+      align-items: stretch;
+    }
+    .unit-converter-arrow.custom-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 56px;
+      padding: 0 1vw;
+      margin-top: 60px;
+    }
+    .unit-converter-arrow.custom-arrow svg {
+      width: 2.5em;
+      height: 2.5em;
+      color: #76809b;
+      display: block;
+    }
+
+    .unit-converter-side {
+      flex: 1 1 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2vw;
+      min-width: 240px;
+      box-sizing: border-box;
+      padding: 0 0.5vw;
+    }
+    .unit-tabs {
+      display: flex;
+      gap: 0.6vw;
+      padding-bottom: 0.5vw;
+      flex-wrap: wrap;
+    }
+    .unit-tab {
+      background: #f3f3f3;
+      border: none;
+      padding: 0.5em 1.5em;
+      border-radius: 8px;
+      font-size: 16px;
+      color: #222;
+      cursor: pointer;
+      transition: background 0.16s;
+      font-weight: 400;
+      box-sizing: border-box;
+    }
+    .unit-tab.active, .unit-tab:focus {
+      background: #204cd1;
+      color: #fff;
+      font-weight: 400;
+    }
+    .unit-label {
+      font-size: 1.1em;
+      color: #444;
+      padding-bottom: 0.3vw;
+      font-weight: 500;
+    }
+    .unit-input {
+      width: 100%;
+      padding: 1.3em 1em;
+      border-radius: 10px;
+      border: none;
+      background: #ededed;
+      font-size: 1.6em;
+      color: #555;
+      box-sizing: border-box;
+    }
+    .unit-btn-row {
+      display: flex;
+      gap: 0.7vw;
+      padding-top: 0.5vw;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    .unit-btn {
+      background: #ededed;
+      border: none;
+      padding: 0.5em 1.5em;
+      border-radius: 8px;
+      color: #222;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+      font-weight: 400;
+      box-sizing: border-box;
+    }
+    .unit-btn.active, .unit-btn:focus {
+      background: #204cd1;
+      color: #fff;
+      font-weight: 400;
+    }
+    .unit-converter-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 1vw;
+      min-width: 40px;
+    }
+    @media (max-width: 900px) {
+      .unit-converter-modal { width: 99vw; min-width: unset; padding: 2vw 0.5vw; }
+      .unit-converter-main { flex-direction: column; gap: 2vw; padding: 2vw 0.5vw; align-items: stretch; }
+      .unit-col { max-width: 100%; min-width: 0; }
+      .unit-converter-arrow.custom-arrow { min-width: 40px; padding: 1vw 0; }
+    }
+    @media (max-width: 600px) {
+      .unit-converter-modal { padding: 2vw 0.2vw; }
+      .unit-converter-main { gap: 3vw; padding: 2vw 0.2vw; }
+      .unit-tabs, .unit-btn-row { gap: 2vw; }
+      .unit-input { font-size: 1.15em; padding: 0.9em 0.7em; }
+      .unit-converter-arrow.custom-arrow svg { width: 2em; height: 2em; }
+    }
+  </style>
+  <script>
+    // Popup open/close logic
+    document.getElementById('unitConvertor').onclick = function() {
+      document.getElementById('unitConverterPopup').classList.add('active');
+    };
+    document.getElementById('closeUnitConverter').onclick = function() {
+      document.getElementById('unitConverterPopup').classList.remove('active');
+    };
+    document.getElementById('unitConverterPopup').onclick = function(e) {
+      if(e.target === this) this.classList.remove('active');
+    };
+    // --- Dynamic Unit Buttons Logic ---
+const unitCategories = {
+  Length: [
+    'Kilometre', 'Metre', 'Centimetre', 'Millimetre', 'Micrometre', 'Nanometre',
+    'Mile', 'Yard', 'Foot', 'Inch', 'Nautical mile'
+  ],
+  Weight: [
+    'Kilogram', 'Gram', 'Milligram', 'Microgram', 'Imperial ton', 'US ton', 'Stone', 'Pound', 'Ounce'
+  ],
+  Volume: [
+    'US liquid gallon', 'US liquid quart', 'US liquid pint', 'US legal cup', 'US fluid ounce', 'US tablespoon', 'US teaspoon',
+    'Cubic meter', 'Liter', 'Milliliter', 'Imperial gallon', 'Imperial quart', 'Cl', 'Imperial pint', 'Imperial cup',
+    'Imperial fluid ounce', 'Imperial tablespoon', 'Imperial teaspoon', 'Cubic foot', 'Cubic inch'
+  ],
+  Temperature: [
+    'Degree Celsius', 'Fahrenheit', 'Kelvin'
+  ]
+};
+let selectedCategory = 'Length';
+let fromUnit = unitCategories[selectedCategory][2]; // Default to 'Metre'
+let toUnit = unitCategories[selectedCategory][3];   // Default to 'Centimetre'
+
+function renderUnitButtons() {
+  const units = unitCategories[selectedCategory];
+  const fromBtns = units.map(unit => `<button class="unit-btn${unit === fromUnit ? ' active' : ''}" data-unit="${unit}">${unit}</button>`).join('');
+  const toBtns = units.map(unit => `<button class="unit-btn${unit === toUnit ? ' active' : ''}" data-unit="${unit}">${unit}</button>`).join('');
+  document.getElementById('fromUnitBtns').innerHTML = fromBtns;
+  document.getElementById('toUnitBtns').innerHTML = toBtns;
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  Array.from(document.querySelectorAll('.unit-tab')).forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.unit-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      selectedCategory = this.textContent.trim();
+      // Set defaults for the new category
+      if (unitCategories[selectedCategory]) {
+        fromUnit = unitCategories[selectedCategory][0];
+        toUnit = unitCategories[selectedCategory][1] || unitCategories[selectedCategory][0];
+      }
+      renderUnitButtons();
+    });
+  });
+  // Initial render
+  renderUnitButtons();
+  document.getElementById('fromUnitBtns').addEventListener('click', e => handleUnitBtnClick(e, 'from'));
+  document.getElementById('toUnitBtns').addEventListener('click', e => handleUnitBtnClick(e, 'to'));
+});
+function handleUnitBtnClick(e, type) {
+  if (e.target.classList.contains('unit-btn')) {
+    if (type === 'from') {
+      fromUnit = e.target.textContent.trim();
+      renderUnitButtons();
+    } else if (type === 'to') {
+      toUnit = e.target.textContent.trim();
+      renderUnitButtons();
+    }
+  }
+}
+// --- End Dynamic Unit Buttons Logic ---
+
+// --- Conversion Logic ---
+const lengthUnitToMeter = {
+  'Kilometre': 1000,
+  'Metre': 1,
+  'Centimetre': 0.01,
+  'Millimetre': 0.001,
+  'Micrometre': 0.000001,
+  'Nanometre': 0.000000001,
+  'Mile': 1609.344,
+  'Yard': 0.9144,
+  'Foot': 0.3048,
+  'Inch': 0.0254,
+  'Nautical mile': 1852
+};
+const weightUnitToKg = {
+  'Kilogram': 1,
+  'Gram': 0.001,
+  'Milligram': 0.000001,
+  'Microgram': 0.000000001,
+  'Imperial ton': 1016.0469088,
+  'US ton': 907.18474,
+  'Stone': 6.35029318,
+  'Pound': 0.45359237,
+  'Ounce': 0.0283495231
+};
+
+function convertLength(value, from, to) {
+  if (!(from in lengthUnitToMeter) || !(to in lengthUnitToMeter)) return '';
+  const meters = parseFloat(value) * lengthUnitToMeter[from];
+  return meters / lengthUnitToMeter[to];
+}
+function convertWeight(value, from, to) {
+  if (!(from in weightUnitToKg) || !(to in weightUnitToKg)) return '';
+  const kg = parseFloat(value) * weightUnitToKg[from];
+  return kg / weightUnitToKg[to];
+}
+
+function updateConversion() {
+  const inputVal = document.getElementById('fromValue').value;
+  if (inputVal === '' || isNaN(Number(inputVal))) {
+    document.getElementById('toValue').value = '';
+    return;
+  }
+  let result = '';
+  if (selectedCategory === 'Length') {
+    result = convertLength(inputVal, fromUnit, toUnit);
+  } else if (selectedCategory === 'Weight') {
+    result = convertWeight(inputVal, fromUnit, toUnit);
+  }
+  document.getElementById('toValue').value = isNaN(result) ? '' : result;
+}
+
+// Listen for changes
+window.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('fromValue').addEventListener('input', updateConversion);
+});
+// Patch renderUnitButtons to call updateConversion after re-render
+const origRenderUnitButtons = renderUnitButtons;
+renderUnitButtons = function() {
+  origRenderUnitButtons();
+  updateConversion();
+};
+const volumeUnitToLiter = {
+  'US liquid gallon': 3.785411784,
+  'US liquid quart': 0.946352946,
+  'US liquid pint': 0.473176473,
+  'US legal cup': 0.24,
+  'US fluid ounce': 0.0295735295625,
+  'US tablespoon': 0.01478676478125,
+  'US teaspoon': 0.00492892159375,
+  'Cubic meter': 1000,
+  'Liter': 1,
+  'Milliliter': 0.001,
+  'Imperial gallon': 4.54609,
+  'Imperial quart': 1.1365225,
+  'Cl': 0.01,
+  'Imperial pint': 0.56826125,
+  'Imperial cup': 0.284130625,
+  'Imperial fluid ounce': 0.0284130625,
+  'Imperial tablespoon': 0.0177582,
+  'Imperial teaspoon': 0.00591939,
+  'Cubic foot': 28.316846592,
+  'Cubic inch': 0.016387064
+};
+
+function convertVolume(value, from, to) {
+  if (!(from in volumeUnitToLiter) || !(to in volumeUnitToLiter)) return '';
+  const liters = parseFloat(value) * volumeUnitToLiter[from];
+  return liters / volumeUnitToLiter[to];
+}
+
+// Update updateConversion to support Volume
+function convertTemperature(value, from, to) {
+  value = parseFloat(value);
+  if (from === to) return value;
+  // Convert from -> Celsius
+  let celsius;
+  if (from === 'Degree Celsius') {
+    celsius = value;
+  } else if (from === 'Fahrenheit') {
+    celsius = (value - 32) * 5/9;
+  } else if (from === 'Kelvin') {
+    celsius = value - 273.15;
+  } else {
+    return '';
+  }
+  // Convert Celsius -> to
+  if (to === 'Degree Celsius') return celsius;
+  if (to === 'Fahrenheit') return celsius * 9/5 + 32;
+  if (to === 'Kelvin') return celsius + 273.15;
+  return '';
+}
+
+const oldUpdateConversion = updateConversion;
+updateConversion = function() {
+  const inputVal = document.getElementById('fromValue').value;
+  if (inputVal === '' || isNaN(Number(inputVal))) {
+    document.getElementById('toValue').value = '';
+    return;
+  }
+  let result = '';
+  if (selectedCategory === 'Length') {
+    result = convertLength(inputVal, fromUnit, toUnit);
+  } else if (selectedCategory === 'Weight') {
+    result = convertWeight(inputVal, fromUnit, toUnit);
+  } else if (selectedCategory === 'Volume') {
+    result = convertVolume(inputVal, fromUnit, toUnit);
+  } else if (selectedCategory === 'Temperature') {
+    result = convertTemperature(inputVal, fromUnit, toUnit);
+  }
+  document.getElementById('toValue').value = isNaN(result) ? '' : result;
+};
+// --- End Conversion Logic ---
+
+// Keyboard shortcut: 'S' key toggles popup
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 's' || e.key === 'S') {
+        const popup = document.getElementById('unitConverterPopup');
+        popup.classList.toggle('active');
+      }
+    });
+    // Tab logic (visual only)
+    document.querySelectorAll('.unit-tabs').forEach(tabRow => {
+      tabRow.addEventListener('click', function(e) {
+        if(e.target.classList.contains('unit-tab')) {
+          tabRow.querySelectorAll('.unit-tab').forEach(btn=>btn.classList.remove('active'));
+          e.target.classList.add('active');
+        }
+      });
+    });
+    // Unit button logic (visual only)
+    document.querySelectorAll('.unit-btn-row').forEach(btnRow => {
+      btnRow.addEventListener('click', function(e) {
+        if(e.target.classList.contains('unit-btn')) {
+          btnRow.querySelectorAll('.unit-btn').forEach(btn=>btn.classList.remove('active'));
+          e.target.classList.add('active');
+        }
+      });
+    });
   </script>
 </body>
 
