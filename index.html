@@ -75,6 +75,30 @@
       flex-direction: column;
       min-height: 0;
       max-width: 40px;
+      position: relative;
+    }
+    .flex-arrow {
+      position: relative;
+    }
+    .flex-arrow .leftool-label {
+      display: none;
+      position: absolute;
+      right: 48px;
+      left: auto;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #3d3d3d;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.95em;
+      white-space: nowrap;
+      z-index: 10;
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .flex-arrow:hover .leftool-label {
+      display: block;
     }
 
     .flex-arrow {
@@ -222,7 +246,6 @@
     .formatted-html {
       background: #f0f0f0;
       border-radius: 6px;
-      padding: 1em;
       font-family: Georgia, Times, 'Times New Roman', serif;
       white-space: pre-wrap;
       word-break: break-word;
@@ -727,6 +750,10 @@
     }
 
     /* Thumbnail Image */
+    .thumbnail-wrapper {
+      position: relative;
+      display: inline-block;
+    }
     .thumbnail-img {
       height: 40px;
       width: auto;
@@ -737,9 +764,30 @@
       background: #fff;
       transition: border 0.15s;
     }
+    .thumb-badge {
+      position: absolute;
+      top: 1px;
+      right: 1px;
+      min-width: 16px;
+      height: 16px;
+      background: #3d3d3d;
+      color: #fff;
+      font-size: 8px;
+      font-weight: bold;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.13);
+      z-index: 2;
+      pointer-events: none;
+      border: 2px solid #fff;
+    }
 
-    .thumbnail-img.active {
-      border-color: #1a4fa0;
+    #thumbsRow .thumbnail-img.active {
+      border: 2px solid #3e6cf4 !important;
+      /* box-shadow: 0 0 0 2px #b3c6e7 !important; */
+      background: #f0f6ff !important;
     }
 
     /* Status Text Colors */
@@ -766,7 +814,7 @@
       min-height: 120px;
       max-height: 100%;
       height: 100%;
-      background: #eeeeee;
+      /* background: #eeeeee; */
       border: 2px solid #eeeeee;
       border-radius: 8px;
       padding: 8px;
@@ -804,7 +852,7 @@
     }
 
     .token.attr-name {
-      color: #d10800 !important;
+      color: #ff0a00 !important;
     }
 
     /* Invalid HTML tag highlight */
@@ -855,7 +903,8 @@
       <button class="copy-btn" id="copyBtn" type="button">Copy</button>
     </div>
     <div class="flex-item-4">
-      <div class="flex-arrow" id="flexArrow">
+      <div class="flex-arrow" id="flexArrow" title="Closed List">
+        <span class="leftool-label">Closed List</span>
         <svg id="arrowIcon" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" style="rotate: 180deg;"
           xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#4f4f4f" viewBox="0 0 24 24"
           class="arrow-icon-rotated">
@@ -865,7 +914,8 @@
           <path d="M12 20h8c1.1046 0 2-.8954 2-2V6c0-1.10457-.8954-2-2-2h-8v16Z" />
         </svg>
       </div>
-      <div class="flex-arrow" id="flexArrow">
+      <div class="flex-arrow" id="flexArrow" title="Image Viewer">
+        <span class="leftool-label">Image Viewer</span>
         <!-- Never change this icon -->
         <svg id="imgPopup" class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
           fill="#4f4f4f" viewBox="0 0 24 24" style="cursor: pointer;">
@@ -873,7 +923,8 @@
   <path fill-rule="evenodd" d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12c0 .556-.227 1.06-.593 1.422A.999.999 0 0 1 20.5 20H4a2.002 2.002 0 0 1-2-2V6Zm6.892 12 3.833-5.356-3.99-4.322a1 1 0 0 0-1.549.097L4 12.879V6h16v9.95l-3.257-3.619a1 1 0 0 0-1.557.088L11.2 18H8.892Z" clip-rule="evenodd"/>
         </svg>
       </div>
-      <div class="flex-arrow" id="urlOpenerArrow">
+      <div class="flex-arrow" id="urlOpenerArrow" title="Bulk URL">
+        <span class="leftool-label">Bulk URL</span>
         <svg id="urlOpenerIcon" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#4f4f4f" viewBox="0 0 24 24">
           <path fill-rule="evenodd"
@@ -884,7 +935,8 @@
             clip-rule="evenodd" />
         </svg>
       </div>
-      <div class="flex-arrow" id="urlOpenerArrow">
+      <div class="flex-arrow" id="urlOpenerArrow" title="Unit Convertor">
+        <span class="leftool-label">Unit Convertor</span>
         <svg id="unitConvertor" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" 
           xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
           <path stroke="#4f4f4f" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15v3c0 .5523.44772 1 1 1h10.5M3 15v-4m0 4h11M3 11V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v5M3 11h18m0 0v1M8 11v8m4-8v8m4-8v2m1 4h2m0 0h2m-2 0v2m0-2v-2"/>
@@ -1580,8 +1632,16 @@
       }
       // Render all thumbnails
       thumbsRow.innerHTML = imageLinks.map((src, idx) =>
-        `<img src="${src}" data-idx="${idx}" class="thumbnail-img ${idx === currentImgIdx ? 'active' : ''}">`
+        `<div class="thumbnail-wrapper" style="position:relative;display:inline-block;">
+          <img src="${src}" data-idx="${idx}" class="thumbnail-img ${idx === currentImgIdx ? 'active' : ''}">
+          <span class="thumb-badge">${idx + 1}</span>
+        </div>`
       ).join('');
+      // Scroll active thumbnail into view
+      const activeThumb = thumbsRow.querySelector('.thumbnail-img.active');
+      if (activeThumb) {
+        activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
     }
 
     // Thumbnail click logic
